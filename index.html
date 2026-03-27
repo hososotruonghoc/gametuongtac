@@ -2908,7 +2908,7 @@ for (var i = 0; i &lt; cards.length; i++) {
 // ============================================================
 // CẤU HÌNH: THAY URL NÀY BẰNG URL GOOGLE APPS SCRIPT CỦA BẠN
 // ============================================================
-var API_URL = 'https://script.google.com/macros/library/d/1xd2mf0U636tirHXNRvTHswldTH5l-LljZSFTOc0Owu5pvCg07HYX3W2w/2';
+var API_URL = 'https://script.google.com/macros/s/AKfycbxiBju4AP5PRFH2BESG2dwKMgCrJA9Iu4sc8QJ5WnezcrABoCIdlF_rRGXTM4Ro4cWKVQ/exec';
 // ============================================================
 
 function getDeviceId() {
@@ -2925,8 +2925,22 @@ function checkSession() {
   if (session) {
     try {
       var data = JSON.parse(session);
-      if (data.user && data.expires > Date.now()) {
-        showGame();
+      if (data.user && data.pass && data.expires > Date.now()) {
+        // Xác thực lại với server (nếu admin đổi mật khẩu → sẽ bị đăng xuất)
+        var deviceId = getDeviceId();
+        fetch(API_URL + '?action=login&user=' + encodeURIComponent(data.user) + '&pass=' + encodeURIComponent(data.pass) + '&device=' + encodeURIComponent(deviceId))
+          .then(function(r) { return r.json(); })
+          .then(function(result) {
+            if (result.status === 'ok') {
+              showGame();
+            } else {
+              localStorage.removeItem('_session');
+            }
+          })
+          .catch(function() {
+            // Mất mạng → vẫn cho dùng session cũ
+            showGame();
+          });
         return;
       }
     } catch(e) {}
@@ -2961,6 +2975,7 @@ function doLogin() {
         msg.textContent = '✅ Đăng nhập thành công!';
         localStorage.setItem('_session', JSON.stringify({
           user: user,
+          pass: pass,
           expires: Date.now() + 24 * 60 * 60 * 1000
         }));
         setTimeout(function() { showGame(); }, 800);
