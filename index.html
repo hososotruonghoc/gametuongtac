@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🏎️ Đường Đua Tri Thức – Lớp 5</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #0d1117; --card: #161b22;
+  --t1: #ff6b6b; --t2: #4ecdc4; --t3: #ffe66d; --t4: #a78bfa;
+  --correct: #22c55e; --wrong: #ef4444;
+  --text: #e6edf3; --text2: #8b949e;
+}
+
+body {
+  font-family: 'Nunito', sans-serif;
+  background: var(--bg); color: var(--text);
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 1000px; margin: 0 auto; padding: 15px;
+}
+
+h1 {
+  font-family: 'Baloo 2', cursive; font-size: 2.5em;
+  text-align: center;
+  background: linear-gradient(90deg, var(--t1), var(--t2), var(--t3), var(--t4));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  margin: 10px 0 5px;
+}
+.subtitle { text-align: center; color: var(--text2); margin-bottom: 15px; }
+
+.gv-banner {
+  background: rgba(255,230,109,0.08); border: 1px solid rgba(255,230,109,0.3);
+  border-radius: 14px; padding: 12px 20px;
+  text-align: center; font-size: 0.9em; color: var(--t3);
+  margin-bottom: 15px;
+}
+
+/* Setup */
+.setup-card {
+  background: var(--card); border: 1px solid #30363d;
+  border-radius: 20px; padding: 28px;
+  max-width: 600px; margin: 0 auto;
+}
+.setup-card label {
+  display: block; font-weight: 700; margin: 14px 0 6px; color: var(--t2); font-size: 0.95em;
+}
+.setup-card select, .setup-card input, .setup-card textarea {
+  width: 100%; padding: 11px 14px; border-radius: 10px;
+  border: 1px solid #30363d; background: #0d1117;
+  color: var(--text); font-family: 'Nunito', sans-serif;
+  font-size: 0.95em; outline: none;
+}
+.setup-card select:focus, .setup-card input:focus, .setup-card textarea:focus {
+  border-color: var(--t2);
+}
+.setup-card select option { background: #0d1117; }
+.setup-card textarea { height: 120px; resize: vertical; }
+.team-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: 6px; padding: 13px 30px;
+  border: none; border-radius: 12px;
+  font-family: 'Baloo 2', cursive; font-size: 1.15em;
+  cursor: pointer; transition: all 0.3s;
+}
+.btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
+.btn-go { background: linear-gradient(135deg, var(--t2), #06b6d4); color: #0d1117; width: 100%; margin-top: 18px; }
+.btn-reveal { background: linear-gradient(135deg, var(--t3), #f59e0b); color: #1a1a1a; }
+.btn-next { background: linear-gradient(135deg, var(--t4), #7c3aed); color: white; }
+.btn-restart { background: linear-gradient(135deg, var(--t1), #dc2626); color: white; }
+
+.hidden { display: none !important; }
+
+/* ===== RACE TRACK ===== */
+.race-container { margin: 10px 0; }
+
+.race-track {
+  background: var(--card); border: 1px solid #30363d;
+  border-radius: 16px; padding: 15px; margin-bottom: 12px;
+}
+
+.track-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 8px; font-size: 0.85em; color: var(--text2);
+}
+
+.lane {
+  display: flex; align-items: center; gap: 10px;
+  margin: 8px 0; position: relative;
+}
+.lane-label {
+  min-width: 70px; font-weight: 800; font-size: 0.95em;
+  text-align: right; white-space: nowrap;
+}
+.lane-track {
+  flex: 1; height: 40px; background: #21262d;
+  border-radius: 20px; position: relative; overflow: hidden;
+  border: 1px solid #30363d;
+}
+.lane-progress {
+  height: 100%; border-radius: 20px;
+  transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: flex; align-items: center; justify-content: flex-end;
+  padding-right: 8px; font-size: 1.4em;
+  min-width: 45px;
+}
+.lane-score {
+  min-width: 50px; text-align: center;
+  font-family: 'Baloo 2', cursive; font-size: 1.1em;
+}
+.finish-flag {
+  position: absolute; right: 4px; top: 50%; transform: translateY(-50%);
+  font-size: 1.1em; opacity: 0.4;
+}
+
+/* Steps markers */
+.step-markers {
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  display: flex; pointer-events: none;
+}
+.step-marker {
+  flex: 1; border-right: 1px dashed rgba(255,255,255,0.06);
+}
+
+/* Question card */
+.q-card {
+  background: var(--card); border: 1px solid #30363d;
+  border-radius: 16px; padding: 24px;
+  text-align: center; margin-bottom: 12px;
+  transition: 0.4s;
+}
+.q-card.flash-correct { border-color: var(--correct); box-shadow: 0 0 30px rgba(34,197,94,0.2); }
+.q-card.flash-wrong { border-color: var(--wrong); box-shadow: 0 0 30px rgba(239,68,68,0.2); }
+
+.q-number { color: var(--text2); font-size: 0.9em; margin-bottom: 5px; }
+.q-team {
+  display: inline-block; padding: 4px 16px; border-radius: 8px;
+  font-weight: 800; font-size: 0.9em; margin-bottom: 10px;
+}
+.q-text {
+  font-family: 'Baloo 2', cursive; font-size: 1.8em;
+  margin: 10px 0 18px; line-height: 1.3;
+}
+
+.options-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+  max-width: 600px; margin: 0 auto;
+}
+.option-btn {
+  padding: 14px 18px; border-radius: 12px;
+  border: 2px solid #30363d; background: #21262d;
+  color: var(--text); font-size: 1.1em; font-weight: 700;
+  cursor: pointer; transition: 0.3s;
+  text-align: center;
+}
+.option-btn:hover { border-color: var(--t2); background: rgba(78,205,196,0.08); transform: scale(1.02); }
+.option-btn.selected { border-color: var(--t3); background: rgba(255,230,109,0.1); }
+.option-btn.correct { border-color: var(--correct); background: rgba(34,197,94,0.15); }
+.option-btn.wrong { border-color: var(--wrong); background: rgba(239,68,68,0.1); }
+
+.feedback { font-family: 'Baloo 2', cursive; font-size: 1.3em; margin: 12px 0; min-height: 40px; }
+.feedback.correct { color: var(--correct); }
+.feedback.wrong { color: var(--wrong); }
+
+.controls { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+
+/* Result */
+.result-box {
+  background: var(--card); border: 1px solid #30363d;
+  border-radius: 20px; padding: 30px;
+  text-align: center; max-width: 600px; margin: 20px auto;
+}
+.podium { display: flex; justify-content: center; align-items: flex-end; gap: 10px; margin: 20px 0; }
+.podium-place {
+  border-radius: 14px 14px 0 0; display: flex; flex-direction: column;
+  align-items: center; justify-content: flex-end; padding: 15px 20px;
+  min-width: 100px;
+}
+.podium-1 { height: 160px; background: linear-gradient(180deg, rgba(255,230,109,0.3), rgba(255,230,109,0.05)); border: 1px solid rgba(255,230,109,0.3); }
+.podium-2 { height: 120px; background: linear-gradient(180deg, rgba(192,192,192,0.2), rgba(192,192,192,0.05)); border: 1px solid rgba(192,192,192,0.2); }
+.podium-3 { height: 90px; background: linear-gradient(180deg, rgba(205,127,50,0.2), rgba(205,127,50,0.05)); border: 1px solid rgba(205,127,50,0.2); }
+.podium-name { font-weight: 800; font-size: 1em; margin-top: 5px; }
+.podium-score { font-family: 'Baloo 2', cursive; font-size: 1.3em; }
+.podium-medal { font-size: 2em; }
+
+@media (max-width: 600px) {
+  h1 { font-size: 1.8em; }
+  .q-text { font-size: 1.3em; }
+  .options-grid { grid-template-columns: 1fr; }
+  .lane-label { min-width: 50px; font-size: 0.8em; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <!-- SETUP -->
+  <div id="setupScreen">
+    <h1>🏎️ Đường Đua Tri Thức</h1>
+    <p class="subtitle">Trò chơi thi đua nhóm – Toán & Tiếng Việt lớp 5</p>
+    <div class="gv-banner">
+      <strong>📺 Hướng dẫn:</strong> Chiếu màn hình → Mỗi lượt 1 đội trả lời → Đúng = tiến 1 bước → Đội về đích trước thắng!
+    </div>
+
+    <div class="setup-card">
+      <label>📚 Chọn bộ câu hỏi:</label>
+      <select id="questionSet">
+        <option value="toan_stp">Toán: Cộng trừ số thập phân</option>
+        <option value="toan_nhan">Toán: Nhân chia số thập phân</option>
+        <option value="toan_phanso">Toán: Phân số</option>
+        <option value="toan_phantram">Toán: Tỉ số phần trăm</option>
+        <option value="toan_hinhoc">Toán: Hình học (diện tích)</option>
+        <option value="tv_dongnghia">Tiếng Việt: Từ đồng nghĩa</option>
+        <option value="tv_trainghia">Tiếng Việt: Từ trái nghĩa</option>
+        <option value="tv_chinhtả">Tiếng Việt: Chính tả l/n, s/x, ch/tr</option>
+        <option value="tv_cauGhep">Tiếng Việt: Câu ghép & quan hệ từ</option>
+        <option value="custom">✏️ Tự nhập câu hỏi</option>
+      </select>
+
+      <div id="customQArea" class="hidden">
+        <label>Nhập câu hỏi (mỗi dòng 1 câu theo mẫu):</label>
+        <textarea id="customInput" placeholder="Câu hỏi | Đáp án A | Đáp án B | Đáp án C | Đáp án D | Đáp án đúng (A/B/C/D)
+3,5 + 2,7 = ? | 5,2 | 6,2 | 6,7 | 5,7 | B"></textarea>
+      </div>
+
+      <label>👥 Số đội:</label>
+      <select id="teamCount" onchange="updateTeamSetup()">
+        <option value="2">2 đội</option>
+        <option value="3">3 đội</option>
+        <option value="4" selected>4 đội</option>
+      </select>
+
+      <div class="team-grid" id="teamSetup">
+        <input type="text" value="🔴 Tổ 1" class="tn">
+        <input type="text" value="🟢 Tổ 2" class="tn">
+        <input type="text" value="🟡 Tổ 3" class="tn">
+        <input type="text" value="🟣 Tổ 4" class="tn">
+      </div>
+
+      <label>🏁 Số bước để về đích:</label>
+      <select id="stepsToWin">
+        <option value="5" selected>5 bước (nhanh)</option>
+        <option value="7">7 bước</option>
+        <option value="10">10 bước (dài)</option>
+      </select>
+
+      <button class="btn btn-go" onclick="startGame()">🏁 XUẤT PHÁT!</button>
+    </div>
+  </div>
+
+  <!-- GAME -->
+  <div id="gameScreen" class="hidden">
+    <div class="race-container">
+      <div class="race-track" id="raceTrack"></div>
+    </div>
+
+    <div class="q-card" id="qCard">
+      <div class="q-number" id="qNumber">Câu 1</div>
+      <div class="q-team" id="qTeam">Tổ 1</div>
+      <div class="q-text" id="qText">Câu hỏi...</div>
+      <div class="options-grid" id="optionsGrid"></div>
+      <div class="feedback" id="feedback"></div>
+    </div>
+
+    <div class="controls">
+      <button class="btn btn-reveal hidden" id="btnReveal" onclick="revealAnswer()">👁️ Hiện đáp án</button>
+      <button class="btn btn-next hidden" id="btnNext" onclick="nextQuestion()">Câu tiếp ➜</button>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div id="resultScreen" class="hidden">
+    <div class="result-box">
+      <h1 style="font-size:2em;">🏆 KẾT THÚC</h1>
+      <div id="winnerAnnounce" style="font-family:'Baloo 2',cursive; font-size:1.5em; color:var(--t3); margin:10px 0;"></div>
+      <div class="podium" id="podium"></div>
+      <div class="controls" style="margin-top:20px;">
+        <button class="btn btn-restart" onclick="location.reload()">🔄 Chơi lại</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ========== QUESTION BANKS ==========
+const BANKS = {
+  toan_stp: [
+    { q: "3,5 + 2,7 = ?", opts: ["5,2", "6,2", "6,7", "5,7"], ans: 1 },
+    { q: "8,4 − 3,6 = ?", opts: ["4,8", "5,8", "4,2", "5,2"], ans: 0 },
+    { q: "12,5 + 7,8 = ?", opts: ["20,3", "19,3", "20,8", "19,8"], ans: 0 },
+    { q: "15,2 − 6,7 = ?", opts: ["8,5", "9,5", "8,7", "9,7"], ans: 0 },
+    { q: "4,25 + 3,75 = ?", opts: ["7,00", "8,00", "7,50", "8,50"], ans: 1 },
+    { q: "20,0 − 8,5 = ?", opts: ["12,5", "11,5", "12,0", "11,0"], ans: 1 },
+    { q: "6,3 + 4,9 = ?", opts: ["10,2", "11,2", "10,9", "11,9"], ans: 1 },
+    { q: "9,1 − 2,8 = ?", opts: ["7,3", "6,3", "6,9", "7,9"], ans: 1 },
+    { q: "1,5 + 2,5 + 3,5 = ?", opts: ["6,5", "7,0", "7,5", "8,0"], ans: 2 },
+    { q: "100 − 45,5 = ?", opts: ["55,5", "54,5", "65,5", "64,5"], ans: 1 },
+    { q: "25,6 + 14,4 = ?", opts: ["39,0", "40,0", "39,6", "40,6"], ans: 1 },
+    { q: "50,0 − 12,75 = ?", opts: ["37,25", "38,25", "37,75", "38,75"], ans: 0 },
+  ],
+  toan_nhan: [
+    { q: "2,5 × 4 = ?", opts: ["8", "10", "12", "9"], ans: 1 },
+    { q: "3,6 × 5 = ?", opts: ["15", "16", "18", "20"], ans: 2 },
+    { q: "12,5 × 8 = ?", opts: ["96", "100", "108", "90"], ans: 1 },
+    { q: "0,25 × 12 = ?", opts: ["2", "3", "2,5", "3,5"], ans: 1 },
+    { q: "4,5 × 2 = ?", opts: ["8", "9", "8,5", "9,5"], ans: 1 },
+    { q: "15,6 ÷ 4 = ?", opts: ["3,6", "3,9", "4,1", "3,8"], ans: 1 },
+    { q: "24,8 ÷ 8 = ?", opts: ["3,0", "3,1", "2,9", "3,2"], ans: 1 },
+    { q: "7,5 × 6 = ?", opts: ["42", "45", "48", "40"], ans: 1 },
+    { q: "0,5 × 0,5 = ?", opts: ["0,1", "0,25", "0,5", "1,0"], ans: 1 },
+    { q: "36,9 ÷ 3 = ?", opts: ["12,3", "11,3", "13,3", "12,0"], ans: 0 },
+  ],
+  toan_phanso: [
+    { q: "1/4 + 2/4 = ?", opts: ["3/4", "3/8", "2/4", "1/2"], ans: 0 },
+    { q: "5/6 − 2/6 = ?", opts: ["3/6", "2/6", "1/2", "Cả A và C"], ans: 3 },
+    { q: "So sánh: 3/5 ☐ 2/5", opts: [">", "<", "=", "Không so sánh được"], ans: 0 },
+    { q: "2/3 + 1/6 = ?", opts: ["3/6", "5/6", "3/9", "1/2"], ans: 1 },
+    { q: "Phân số nào bằng 1/2?", opts: ["2/3", "3/6", "2/5", "4/6"], ans: 1 },
+    { q: "3/4 − 1/2 = ?", opts: ["1/4", "2/4", "1/2", "2/2"], ans: 0 },
+    { q: "So sánh: 2/3 ☐ 3/4", opts: [">", "<", "=", "Cùng bằng 1"], ans: 1 },
+    { q: "Phân số thập phân của 1/4?", opts: ["25/10", "25/100", "4/10", "4/100"], ans: 1 },
+    { q: "7/10 + 3/10 = ?", opts: ["10/10", "10/20", "1", "Cả A và C"], ans: 3 },
+    { q: "Rút gọn 6/8 = ?", opts: ["3/4", "2/4", "3/8", "6/4"], ans: 0 },
+  ],
+  toan_phantram: [
+    { q: "25% của 200 = ?", opts: ["25", "50", "75", "100"], ans: 1 },
+    { q: "10% của 150 = ?", opts: ["10", "15", "20", "25"], ans: 1 },
+    { q: "50% của 86 = ?", opts: ["43", "42", "44", "40"], ans: 0 },
+    { q: "20% của 350 = ?", opts: ["60", "70", "80", "65"], ans: 1 },
+    { q: "Giảm 30% giá 200 nghìn = ?", opts: ["140", "160", "170", "130"], ans: 0 },
+    { q: "15% của 400 = ?", opts: ["50", "55", "60", "65"], ans: 2 },
+    { q: "75% của 80 = ?", opts: ["55", "60", "65", "70"], ans: 1 },
+    { q: "40 là ?% của 200", opts: ["15%", "20%", "25%", "30%"], ans: 1 },
+    { q: "5% của 1000 = ?", opts: ["5", "50", "500", "100"], ans: 1 },
+    { q: "Tăng 10% từ 500 = ?", opts: ["510", "550", "600", "505"], ans: 1 },
+  ],
+  toan_hinhoc: [
+    { q: "S tam giác, đáy 8cm, cao 6cm?", opts: ["48 cm²", "24 cm²", "14 cm²", "28 cm²"], ans: 1 },
+    { q: "S hình thang, 2 đáy 5+7cm, cao 4cm?", opts: ["24 cm²", "48 cm²", "20 cm²", "28 cm²"], ans: 0 },
+    { q: "Chu vi hình tròn r = 7cm? (π≈3,14)", opts: ["43,96", "21,98", "153,86", "44"], ans: 0 },
+    { q: "S hình tròn r = 5cm? (π≈3,14)", opts: ["78,5", "31,4", "15,7", "157"], ans: 0 },
+    { q: "S tam giác, đáy 10cm, cao 5cm?", opts: ["50 cm²", "25 cm²", "15 cm²", "30 cm²"], ans: 1 },
+    { q: "S hình thang, đáy 6+10cm, cao 5cm?", opts: ["80 cm²", "40 cm²", "35 cm²", "45 cm²"], ans: 1 },
+    { q: "Chu vi hình tròn d = 10cm?", opts: ["31,4", "15,7", "78,5", "62,8"], ans: 0 },
+    { q: "S tam giác vuông, 2 cạnh góc vuông 3cm, 4cm?", opts: ["12 cm²", "6 cm²", "7 cm²", "14 cm²"], ans: 1 },
+    { q: "S hình tròn r = 10cm?", opts: ["314 cm²", "628 cm²", "31,4 cm²", "62,8 cm²"], ans: 0 },
+    { q: "S hình thang, đáy 8+12cm, cao 7cm?", opts: ["140 cm²", "70 cm²", "100 cm²", "56 cm²"], ans: 1 },
+  ],
+  tv_dongnghia: [
+    { q: "Từ đồng nghĩa với 'xinh đẹp'?", opts: ["xấu xí", "xinh xắn", "bình thường", "cao lớn"], ans: 1 },
+    { q: "Từ đồng nghĩa với 'gan dạ'?", opts: ["nhút nhát", "dũng cảm", "vui vẻ", "hiền lành"], ans: 1 },
+    { q: "'Bao la' đồng nghĩa với?", opts: ["nhỏ bé", "chật hẹp", "mênh mông", "ngắn ngủi"], ans: 2 },
+    { q: "Từ đồng nghĩa với 'chăm chỉ'?", opts: ["lười biếng", "siêng năng", "cẩu thả", "nóng nảy"], ans: 1 },
+    { q: "'Thông minh' đồng nghĩa với?", opts: ["sáng dạ", "chậm hiểu", "ngốc nghếch", "lười biếng"], ans: 0 },
+    { q: "Từ đồng nghĩa với 'vui vẻ'?", opts: ["buồn bã", "hân hoan", "giận dữ", "lo lắng"], ans: 1 },
+    { q: "'Kiên nhẫn' đồng nghĩa với?", opts: ["nóng vội", "nhẫn nại", "cẩu thả", "kiêu căng"], ans: 1 },
+    { q: "Từ đồng nghĩa với 'giúp đỡ'?", opts: ["cản trở", "hỗ trợ", "phá hoại", "bỏ mặc"], ans: 1 },
+    { q: "'Trung thực' đồng nghĩa với?", opts: ["gian dối", "thật thà", "kiêu căng", "nhút nhát"], ans: 1 },
+    { q: "Từ đồng nghĩa với 'ấm áp'?", opts: ["lạnh lẽo", "mát mẻ", "ấm cúng", "nóng bức"], ans: 2 },
+  ],
+  tv_trainghia: [
+    { q: "Từ trái nghĩa với 'cao'?", opts: ["to", "thấp", "lớn", "dài"], ans: 1 },
+    { q: "Từ trái nghĩa với 'siêng năng'?", opts: ["chăm chỉ", "cần cù", "lười biếng", "giỏi giang"], ans: 2 },
+    { q: "'Hòa bình' trái nghĩa với?", opts: ["yên ổn", "chiến tranh", "vui vẻ", "hạnh phúc"], ans: 1 },
+    { q: "Từ trái nghĩa với 'khiêm tốn'?", opts: ["nhún nhường", "lịch sự", "kiêu căng", "hiền lành"], ans: 2 },
+    { q: "'Tiết kiệm' trái nghĩa với?", opts: ["dè sẻn", "lãng phí", "chắt chiu", "cẩn thận"], ans: 1 },
+    { q: "Từ trái nghĩa với 'đoàn kết'?", opts: ["gắn bó", "chia rẽ", "yêu thương", "giúp đỡ"], ans: 1 },
+    { q: "'Trung thực' trái nghĩa với?", opts: ["thật thà", "gian dối", "ngay thẳng", "chân thật"], ans: 1 },
+    { q: "Từ trái nghĩa với 'lạc quan'?", opts: ["vui tươi", "bi quan", "phấn khởi", "hồ hởi"], ans: 1 },
+    { q: "'Cẩn thận' trái nghĩa với?", opts: ["tỉ mỉ", "chu đáo", "cẩu thả", "kỹ lưỡng"], ans: 2 },
+    { q: "Từ trái nghĩa với 'phức tạp'?", opts: ["rắc rối", "đơn giản", "khó khăn", "phiền phức"], ans: 1 },
+  ],
+  "tv_chinhtả": [
+    { q: "Chọn từ viết đúng:", opts: ["lồi cơm", "nồi cơm", "lồi com", "nồi com"], ans: 1 },
+    { q: "Chọn từ viết đúng:", opts: ["ná cờ", "lá cờ", "la cờ", "na cờ"], ans: 1 },
+    { q: "Chọn từ viết đúng:", opts: ["suân sang", "xuân xang", "xuân sang", "suân xang"], ans: 2 },
+    { q: "'Sáng' hay 'xáng' sớm?", opts: ["sáng sớm", "xáng xớm", "xáng sớm", "sáng xớm"], ans: 0 },
+    { q: "Chọn từ viết đúng:", opts: ["chăng chòn", "trăng tròn", "chăng tròn", "trăng chòn"], ans: 1 },
+    { q: "Viết đúng là:", opts: ["trăm trỉ", "chăm chỉ", "chăm trỉ", "trăm chỉ"], ans: 1 },
+    { q: "Chọn từ viết đúng:", opts: ["lung linh", "nung ninh", "lung ninh", "nung linh"], ans: 0 },
+    { q: "Viết đúng là:", opts: ["sinh sắn", "xinh xắn", "xinh sắn", "sinh xắn"], ans: 1 },
+    { q: "Chọn từ viết đúng:", opts: ["xông xâu", "sông sâu", "xông sâu", "sông xâu"], ans: 1 },
+    { q: "Viết đúng là:", opts: ["lô lức", "nô nức", "nô lức", "lô nức"], ans: 1 },
+  ],
+  tv_cauGhep: [
+    { q: "'Trời mưa ___ em vẫn đi học'", opts: ["vì vậy", "ngoài ra", "nhưng", "hơn nữa"], ans: 2 },
+    { q: "'___ chăm chỉ ___ đạt điểm cao'", opts: ["Tuy...nhưng", "Vì...nên", "Mặc dù...nhưng", "Không chỉ...mà còn"], ans: 1 },
+    { q: "'Lan ___ giỏi toán ___ giỏi văn'", opts: ["vì...nên", "tuy...nhưng", "không chỉ...mà còn", "nếu...thì"], ans: 2 },
+    { q: "'___ cố gắng ___ sẽ thành công'", opts: ["Vì...nên", "Nếu...thì", "Tuy...nhưng", "Mặc dù...nhưng"], ans: 1 },
+    { q: "Đâu là câu ghép?", opts: ["Trời mưa to.", "Em đi học chăm chỉ.", "Trời mưa nhưng em vẫn đi học.", "Hoa nở rất đẹp."], ans: 2 },
+    { q: "'Mặc dù khó khăn ___ anh ấy vẫn cố gắng'", opts: ["vì vậy", "nhưng", "nên", "ngoài ra"], ans: 1 },
+    { q: "'Sở dĩ em đạt điểm cao ___ em chăm học'", opts: ["nhưng", "là vì", "ngoài ra", "hơn nữa"], ans: 1 },
+    { q: "'Nhờ luyện tập ___ bạn ấy tiến bộ'", opts: ["nhưng", "tuy nhiên", "mà", "vì vậy"], ans: 2 },
+    { q: "Cặp QHT nào thể hiện quan hệ tương phản?", opts: ["Vì...nên", "Nếu...thì", "Tuy...nhưng", "Nhờ...mà"], ans: 2 },
+    { q: "'Càng học ___ càng giỏi'", opts: ["thì", "nhưng", "vì vậy", "ngoài ra"], ans: 0 },
+  ],
+};
+
+let config = {}, state = {};
+const TEAM_COLORS = ['var(--t1)', 'var(--t2)', 'var(--t3)', 'var(--t4)'];
+const TEAM_EMOJIS = ['🏎️', '🚀', '⭐', '🎯'];
+
+document.getElementById('questionSet').addEventListener('change', e => {
+  document.getElementById('customQArea').classList.toggle('hidden', e.target.value !== 'custom');
+});
+
+function updateTeamSetup() {
+  const n = parseInt(document.getElementById('teamCount').value);
+  const g = document.getElementById('teamSetup');
+  const emojis = ['🔴', '🟢', '🟡', '🟣'];
+  g.innerHTML = '';
+  for (let i = 0; i < n; i++) {
+    const inp = document.createElement('input');
+    inp.type = 'text'; inp.value = `${emojis[i]} Tổ ${i+1}`; inp.className = 'tn';
+    g.appendChild(inp);
+  }
+}
+
+function parseCustomQuestions(text) {
+  return text.trim().split('\n').filter(l => l.trim()).map(line => {
+    const parts = line.split('|').map(p => p.trim());
+    if (parts.length < 6) return null;
+    const ansMap = { A: 0, B: 1, C: 2, D: 3 };
+    return { q: parts[0], opts: [parts[1], parts[2], parts[3], parts[4]], ans: ansMap[parts[5].toUpperCase()] || 0 };
+  }).filter(Boolean);
+}
+
+function shuffle(a) { const b = [...a]; for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; }
+
+function startGame() {
+  const setKey = document.getElementById('questionSet').value;
+  let questions;
+  if (setKey === 'custom') {
+    questions = parseCustomQuestions(document.getElementById('customInput').value);
+    if (questions.length < 3) { alert('Cần ít nhất 3 câu hỏi!'); return; }
+  } else {
+    questions = shuffle(BANKS[setKey] || BANKS.toan_stp);
+  }
+
+  const teamInputs = document.querySelectorAll('.tn');
+  const teams = [...teamInputs].map(i => i.value || 'Tổ');
+
+  config = {
+    questions,
+    teams,
+    teamCount: parseInt(document.getElementById('teamCount').value),
+    stepsToWin: parseInt(document.getElementById('stepsToWin').value),
+  };
+
+  state = {
+    scores: new Array(config.teamCount).fill(0),
+    qIdx: 0, currentTeam: 0, answered: false,
+    questionPool: shuffle([...questions]),
+    winner: null,
+  };
+
+  document.getElementById('setupScreen').classList.add('hidden');
+  document.getElementById('gameScreen').classList.remove('hidden');
+  renderTrack();
+  showQuestion();
+}
+
+function renderTrack() {
+  const track = document.getElementById('raceTrack');
+  const header = `<div class="track-header"><span>🏁 Đường đua – ${config.stepsToWin} bước</span><span>Câu ${state.qIdx + 1}</span></div>`;
+  let lanes = '';
+  for (let i = 0; i < config.teamCount; i++) {
+    const pct = (state.scores[i] / config.stepsToWin * 100).toFixed(1);
+    const markers = Array(config.stepsToWin).fill('<div class="step-marker"></div>').join('');
+    lanes += `
+      <div class="lane">
+        <div class="lane-label" style="color:${TEAM_COLORS[i]}">${config.teams[i]}</div>
+        <div class="lane-track">
+          <div class="step-markers">${markers}</div>
+          <div class="lane-progress" style="width:${pct}%; background:${TEAM_COLORS[i]}">${TEAM_EMOJIS[i]}</div>
+          <div class="finish-flag">🏁</div>
+        </div>
+        <div class="lane-score" style="color:${TEAM_COLORS[i]}">${state.scores[i]}/${config.stepsToWin}</div>
+      </div>`;
+  }
+  track.innerHTML = header + lanes;
+}
+
+function showQuestion() {
+  if (state.winner) { showResults(); return; }
+  if (state.qIdx >= state.questionPool.length) {
+    state.questionPool = shuffle([...config.questions]);
+    state.qIdx = 0;
+  }
+
+  state.answered = false;
+  const q = state.questionPool[state.qIdx];
+
+  document.getElementById('qNumber').textContent = `Câu ${state.qIdx + 1}`;
+  const teamEl = document.getElementById('qTeam');
+  teamEl.textContent = `🎯 ${config.teams[state.currentTeam]}`;
+  teamEl.style.background = TEAM_COLORS[state.currentTeam];
+  teamEl.style.color = state.currentTeam === 2 ? '#1a1a1a' : 'white';
+
+  document.getElementById('qText').textContent = q.q;
+  document.getElementById('feedback').textContent = '';
+  document.getElementById('feedback').className = 'feedback';
+  document.getElementById('btnReveal').classList.add('hidden');
+  document.getElementById('btnNext').classList.add('hidden');
+  document.getElementById('qCard').className = 'q-card';
+
+  const grid = document.getElementById('optionsGrid');
+  const labels = ['A', 'B', 'C', 'D'];
+  grid.innerHTML = q.opts.map((opt, i) =>
+    `<div class="option-btn" onclick="selectOption(${i})" id="opt${i}">${labels[i]}. ${opt}</div>`
+  ).join('');
+}
+
+function selectOption(idx) {
+  if (state.answered) return;
+  state.answered = true;
+
+  const q = state.questionPool[state.qIdx];
+  const isCorrect = idx === q.ans;
+  const card = document.getElementById('qCard');
+  const fb = document.getElementById('feedback');
+
+  document.getElementById(`opt${idx}`).classList.add(isCorrect ? 'correct' : 'wrong');
+  document.getElementById(`opt${q.ans}`).classList.add('correct');
+
+  if (isCorrect) {
+    state.scores[state.currentTeam]++;
+    card.classList.add('flash-correct');
+    fb.className = 'feedback correct';
+    fb.textContent = `🎉 ${config.teams[state.currentTeam]} trả lời đúng! Tiến 1 bước!`;
+    renderTrack();
+
+    if (state.scores[state.currentTeam] >= config.stepsToWin) {
+      state.winner = state.currentTeam;
+      fb.textContent += ' 🏆 VỀ ĐÍCH!';
+    }
+  } else {
+    card.classList.add('flash-wrong');
+    fb.className = 'feedback wrong';
+    fb.textContent = `❌ Sai rồi! Đáp án đúng: ${['A','B','C','D'][q.ans]}`;
+  }
+
+  setTimeout(() => card.className = 'q-card', 800);
+  document.getElementById('btnNext').classList.remove('hidden');
+}
+
+function nextQuestion() {
+  if (state.winner) { showResults(); return; }
+  state.qIdx++;
+  state.currentTeam = (state.currentTeam + 1) % config.teamCount;
+  showQuestion();
+}
+
+function showResults() {
+  document.getElementById('gameScreen').classList.add('hidden');
+  document.getElementById('resultScreen').classList.remove('hidden');
+
+  const ranked = state.scores.map((s, i) => ({ name: config.teams[i], score: s, color: TEAM_COLORS[i] }));
+  ranked.sort((a, b) => b.score - a.score);
+
+  document.getElementById('winnerAnnounce').textContent = `🎊 ${ranked[0].name} chiến thắng! 🎊`;
+
+  const podium = document.getElementById('podium');
+  const medals = ['🥇', '🥈', '🥉', '4️⃣'];
+  const classes = ['podium-1', 'podium-2', 'podium-3'];
+
+  // Reorder for podium display: 2nd, 1st, 3rd
+  const display = ranked.length >= 3
+    ? [ranked[1], ranked[0], ranked[2], ...ranked.slice(3)]
+    : ranked;
+  const displayClasses = ranked.length >= 3
+    ? ['podium-2', 'podium-1', 'podium-3']
+    : classes;
+
+  podium.innerHTML = display.slice(0, Math.min(3, display.length)).map((t, i) => {
+    const realRank = ranked.indexOf(t);
+    return `<div class="podium-place ${displayClasses[i] || 'podium-3'}">
+      <div class="podium-medal">${medals[realRank]}</div>
+      <div class="podium-score">${t.score}/${config.stepsToWin}</div>
+      <div class="podium-name" style="color:${t.color}">${t.name}</div>
+    </div>`;
+  }).join('');
+}
+</script>
+</body>
+</html>
