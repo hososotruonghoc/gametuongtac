@@ -41,6 +41,16 @@ h1{font-family:'Baloo 2',cursive;font-size:1.8em;color:#1e3a6e;margin-bottom:2px
 .msg.success{display:block;background:#dcfce7;color:#166534;border:1px solid #86efac}
 .msg.info{display:block;background:#dbeafe;color:#1e40af;border:1px solid #93c5fd}
 .footer{margin-top:20px;font-size:.78em;color:#94a3b8;font-weight:600}
+@media(max-width:480px){
+  .login-card{padding:24px 18px;border-radius:20px}
+  .logo{font-size:2.4em}
+  h1{font-size:1.4em}
+  .subtitle{font-size:.8em;margin-bottom:16px}
+  .form-group label{font-size:.82em}
+  .form-group input{padding:11px 14px;font-size:.95em;border-radius:10px}
+  .btn-login{padding:12px;font-size:1.1em;border-radius:10px}
+  .footer{font-size:.7em;margin-top:14px}
+}
 .spinner{display:inline-block;width:20px;height:20px;border:3px solid rgba(255,255,255,.3);
   border-top-color:white;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:8px}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -136,6 +146,34 @@ body{font-family:&#x27;Nunito&#x27;,sans-serif;background:#e8f4ff;color:#1e293b;
 .g7{background:linear-gradient(135deg,#cffafe,#67e8f9)}
 .cards{display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:22px;margin:0 auto 28px;max-width:1060px}
 @media(max-width:900px){.cards{grid-template-columns:1fr;max-width:460px}}
+@media(max-width:480px){
+.wrap{padding:10px 8px}
+.hero{padding:18px 8px 16px}
+.title{font-size:clamp(1.4em,6vw,1.9em)}
+.sub{font-size:clamp(.85em,2.5vw,1.1em)}
+.desc{font-size:.82em}
+.ir{gap:6px;margin:6px auto 16px}
+.gi{width:48px;height:48px;font-size:1.3em;border-radius:12px}
+.gi span{font-size:.26em}
+.cards{gap:12px}
+.card{padding:14px 12px}
+.ch{gap:8px}
+.ci{width:38px;height:38px;font-size:1.1em;border-radius:10px}
+.ct{font-size:.88em}
+.cs-t{font-size:.65em}
+.gc{font-size:.62em;padding:2px 8px}
+.cd{font-size:.72em}
+.dt{padding:8px 10px;font-size:.8em}
+.item{padding:5px 8px}
+.iname{font-size:.75em}
+.itopic{font-size:.58em}
+.in{width:18px;height:18px;font-size:.55em}
+.ie{font-size:.9em}
+.ib{font-size:.52em}
+.pb{padding:10px;font-size:.95em}
+.footer .ft{font-size:.75em}
+.badge{font-size:.7em;padding:4px 14px}
+}
 .card{border-radius:22px;padding:22px 18px 18px;position:relative;cursor:default;transition:transform .4s cubic-bezier(.23,1,.32,1),box-shadow .4s;overflow:hidden}
 .card:hover{transform:translateY(-6px) scale(1.015)}
 .card:active{transform:translateY(-1px) scale(.995)}
@@ -284,7 +322,30 @@ h1{font-family:&amp;#x27;Baloo 2&amp;#x27;,cursive;font-size:clamp(2.5em,6vw,4em
 .hidden{display:none!important}
 .confetti-piece{position:fixed;width:10px;height:20px;top:-20px;z-index:100;animation:confettiFall var(--fall-duration) linear forwards}
 @keyframes confettiFall{to{top:110vh;transform:rotate(var(--rotation))}}
-@media(max-width:600px){h1{font-size:2.2em}.question-expression{font-size:2.8em}.answer-input{width:160px;font-size:1.5em}.timer-ring{width:110px;height:110px}.timer-text{font-size:2.2em}}
+@media(max-width:768px){
+.container{padding:10px}
+h1{font-size:clamp(1.6em,5vw,2.2em)}
+.subtitle{font-size:.95em}
+.gv-banner{font-size:.85em;padding:8px 12px}
+.setup-card{padding:18px}
+.setup-card label{font-size:1em}
+.setup-card select,.setup-card input{padding:10px 12px;font-size:.95em}
+.team-inputs{grid-template-columns:1fr}
+.question-expression{font-size:clamp(2em,7vw,4em)}
+.answer-input{width:70%;max-width:240px;padding:14px 18px;font-size:clamp(1.3em,4vw,2em)}
+.answer-area{flex-direction:column;gap:10px}
+.timer-ring{width:120px;height:120px}
+.timer-ring svg{width:120px;height:120px}
+.timer-text{font-size:2.5em}
+.question-card{padding:20px 14px}
+.top-bar{justify-content:center}
+.score-board{justify-content:center}
+.team-score{padding:6px 12px;font-size:1em}
+.round-info{font-size:.95em;padding:6px 12px}
+.feedback{font-size:1.5em}
+.btn{padding:12px 24px;font-size:1.2em}
+.controls{flex-direction:column;align-items:center}
+}
 &amp;lt;/style&amp;gt;
 &amp;lt;/head&amp;gt;
 &amp;lt;body&amp;gt;
@@ -452,7 +513,24 @@ h1{font-family:&amp;#x27;Baloo 2&amp;#x27;,cursive;font-size:clamp(2.5em,6vw,3.8
 .stat-label{font-size:.85em;color:#64748b;font-weight:700}
 .hidden{display:none!important}
 .lines-svg{display:none}
-@media(max-width:700px){h1{font-size:2.2em}.match-container{flex-direction:column;align-items:center;gap:14px}.match-column{min-width:280px}}
+@media(max-width:768px){
+h1{font-size:clamp(1.6em,5vw,2.2em)}
+.sub,.gv-banner{font-size:.85em}
+.setup-card{padding:18px}
+.match-container{flex-direction:column;align-items:stretch;gap:10px;padding:0 4px}
+.match-column{min-width:auto;max-width:100%}
+.match-column h3{font-size:1.1em;padding:8px}
+.match-word{padding:12px 14px;font-size:clamp(1em,3vw,1.3em)}
+.top-bar{gap:4px}
+.timer-display{font-size:1.4em;padding:5px 12px}
+.round-badge,.score-badge{padding:6px 12px;font-size:1em}
+.pair-dot{width:30px;height:30px;font-size:.7em}
+.feedback-msg{font-size:1.3em}
+.btn{padding:10px 20px;font-size:1em}
+.controls{gap:8px}
+.stat-box{padding:10px}
+.stat-number{font-size:1.5em}
+}
 &amp;lt;/style&amp;gt;
 &amp;lt;/head&amp;gt;
 &amp;lt;body&amp;gt;
@@ -594,7 +672,26 @@ h1{font-family:&amp;#x27;Baloo 2&amp;#x27;,cursive;font-size:clamp(2.5em,6vw,3.8
 .podium-name{font-weight:800;font-size:1em;margin-top:4px}
 .podium-score{font-family:&amp;#x27;Baloo 2&amp;#x27;,cursive;font-size:1.3em}
 .podium-medal{font-size:2em}
-@media(max-width:600px){h1{font-size:2em}.q-text{font-size:1.5em}.options-grid{grid-template-columns:1fr}.lane-label{min-width:55px;font-size:.85em}}
+@media(max-width:768px){
+h1{font-size:clamp(1.5em,5vw,2em)}
+.sub,.gv-banner{font-size:.85em}
+.setup-card{padding:18px}
+.team-grid{grid-template-columns:1fr}
+.q-card{padding:18px 12px}
+.q-text{font-size:clamp(1.2em,4vw,2em)}
+.q-team{font-size:1em;padding:4px 14px}
+.options-grid{grid-template-columns:1fr;gap:8px}
+.option-btn{padding:12px 14px;font-size:clamp(.95em,2.5vw,1.2em)}
+.feedback{font-size:1.3em}
+.race-track{padding:10px}
+.lane{gap:6px;margin:5px 0}
+.lane-label{min-width:55px;font-size:.8em}
+.lane-track{height:36px}
+.lane-progress{font-size:1.2em}
+.lane-score{min-width:45px;font-size:1em}
+.btn{padding:10px 22px;font-size:1em}
+.podium-place{min-width:80px;padding:10px 14px}
+}
 &amp;lt;/style&amp;gt;
 &amp;lt;/head&amp;gt;
 &amp;lt;body&amp;gt;
@@ -714,7 +811,25 @@ canvas{border-radius:50%;width:100%;height:100%;box-shadow:0 8px 32px rgba(0,0,0
 .fb.ok{color:#16a34a}.fb.no{color:#dc2626}
 .ctrls{display:flex;justify-content:center;gap:12px;margin-top:10px;flex-wrap:wrap}
 .result{background:white;border-radius:24px;padding:32px;max-width:500px;box-shadow:0 6px 24px rgba(0,0,0,.06);text-align:center;border:2px solid #fbbf24}
-@media(max-width:700px){h1{font-size:2em}.wheel-wrap{width:240px;height:240px}.q-text{font-size:1.2em}.opts{grid-template-columns:1fr}}
+@media(max-width:768px){
+h1{font-size:clamp(1.5em,5vw,2em)}
+.sub{font-size:.9em}
+.setup{padding:18px}
+.wheel-area{flex-direction:column;gap:12px}
+.wheel-wrap{width:min(80vw,320px);height:min(80vw,320px)}
+canvas{width:100%!important;height:100%!important}
+.pointer{font-size:2em;top:-16px}
+.q-panel{min-width:auto;max-width:100%;padding:16px}
+.q-text{font-size:clamp(1.1em,3vw,1.6em)}
+.opts{grid-template-columns:1fr;gap:6px}
+.opt{padding:10px 14px;font-size:clamp(.9em,2.5vw,1.1em)}
+.fb{font-size:1.3em}
+.top{gap:4px}
+.info{padding:5px 10px;font-size:.85em}
+.score-box{font-size:1em}
+.btn-spin{padding:12px 30px;font-size:1.1em}
+.btn{padding:10px 22px;font-size:1em}
+}
 &amp;lt;/style&amp;gt;
 &amp;lt;/head&amp;gt;
 &amp;lt;body&amp;gt;
@@ -1493,7 +1608,27 @@ h1{font-family:&amp;#x27;Baloo 2&amp;#x27;,cursive;font-size:clamp(2em,5vw,3em);
 .result{background:white;border-radius:20px;padding:28px;max-width:500px;box-shadow:0 6px 24px rgba(0,0,0,.06);text-align:center;border:2px solid #86efac}
 .stars{display:flex;justify-content:center;gap:3px;margin:10px 0;font-size:2em}
 .vol-btn{position:fixed;bottom:12px;right:12px;z-index:100;width:40px;height:40px;border-radius:50%;border:2px solid #d1d5db;background:white;font-size:1.2em;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.08);display:flex;align-items:center;justify-content:center}
-@media(max-width:600px){.q-text{font-size:1.3em}.opts{grid-template-columns:1fr}}
+@media(max-width:768px){
+h1{font-size:clamp(1.5em,5vw,2em)}
+.sub,.tag{font-size:.8em}
+.setup{padding:16px}
+.setup label{font-size:.95em}
+.setup select{padding:10px 12px;font-size:.9em}
+.q-card{padding:18px 12px}
+.q-text{font-size:clamp(1.2em,3.5vw,1.8em)}
+.opts{grid-template-columns:1fr;gap:6px}
+.opt{padding:12px 14px;font-size:clamp(.95em,2.5vw,1.2em)}
+.fb{font-size:1.3em}
+.top{gap:4px}
+.info{padding:5px 10px;font-size:.82em}
+.timer{font-size:1.4em}
+.sc{font-size:1em}
+.pbar{height:6px}
+.btn{padding:10px 22px;font-size:1em}
+.ex{font-size:.8em;padding:6px 10px}
+.result{padding:20px}
+.stars{font-size:1.5em}
+}
 &amp;lt;/style&amp;gt;
 &amp;lt;/head&amp;gt;
 &amp;lt;body&amp;gt;
@@ -1769,7 +1904,27 @@ h1{font-family:&amp;#x27;Baloo 2&amp;#x27;,cursive;font-size:clamp(2em,5vw,3em);
 .result{background:white;border-radius:20px;padding:28px;max-width:500px;box-shadow:0 6px 24px rgba(0,0,0,.06);text-align:center;border:2px solid #0891b240}
 .stars{display:flex;justify-content:center;gap:3px;margin:10px 0;font-size:2em}
 .vol-btn{position:fixed;bottom:12px;right:12px;z-index:100;width:40px;height:40px;border-radius:50%;border:2px solid #d1d5db;background:white;font-size:1.2em;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.08);display:flex;align-items:center;justify-content:center}
-@media(max-width:600px){.q-text{font-size:1.3em}.opts{grid-template-columns:1fr}}
+@media(max-width:768px){
+h1{font-size:clamp(1.5em,5vw,2em)}
+.sub,.tag{font-size:.8em}
+.setup{padding:16px}
+.setup label{font-size:.95em}
+.setup select{padding:10px 12px;font-size:.9em}
+.q-card{padding:18px 12px}
+.q-text{font-size:clamp(1.2em,3.5vw,1.8em)}
+.opts{grid-template-columns:1fr;gap:6px}
+.opt{padding:12px 14px;font-size:clamp(.95em,2.5vw,1.2em)}
+.fb{font-size:1.3em}
+.top{gap:4px}
+.info{padding:5px 10px;font-size:.82em}
+.timer{font-size:1.4em}
+.sc{font-size:1em}
+.pbar{height:6px}
+.btn{padding:10px 22px;font-size:1em}
+.ex{font-size:.8em;padding:6px 10px}
+.result{padding:20px}
+.stars{font-size:1.5em}
+}
 &amp;lt;/style&amp;gt;
 &amp;lt;/head&amp;gt;
 &amp;lt;body&amp;gt;
@@ -2048,7 +2203,27 @@ h1{font-family:&amp;#x27;Baloo 2&amp;#x27;,cursive;font-size:clamp(2em,5vw,3em);
 .result{background:white;border-radius:20px;padding:28px;max-width:500px;box-shadow:0 6px 24px rgba(0,0,0,.06);text-align:center;border:2px solid #7c3aed40}
 .stars{display:flex;justify-content:center;gap:3px;margin:10px 0;font-size:2em}
 .vol-btn{position:fixed;bottom:12px;right:12px;z-index:100;width:40px;height:40px;border-radius:50%;border:2px solid #d1d5db;background:white;font-size:1.2em;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.08);display:flex;align-items:center;justify-content:center}
-@media(max-width:600px){.q-text{font-size:1.3em}.opts{grid-template-columns:1fr}}
+@media(max-width:768px){
+h1{font-size:clamp(1.5em,5vw,2em)}
+.sub,.tag{font-size:.8em}
+.setup{padding:16px}
+.setup label{font-size:.95em}
+.setup select{padding:10px 12px;font-size:.9em}
+.q-card{padding:18px 12px}
+.q-text{font-size:clamp(1.2em,3.5vw,1.8em)}
+.opts{grid-template-columns:1fr;gap:6px}
+.opt{padding:12px 14px;font-size:clamp(.95em,2.5vw,1.2em)}
+.fb{font-size:1.3em}
+.top{gap:4px}
+.info{padding:5px 10px;font-size:.82em}
+.timer{font-size:1.4em}
+.sc{font-size:1em}
+.pbar{height:6px}
+.btn{padding:10px 22px;font-size:1em}
+.ex{font-size:.8em;padding:6px 10px}
+.result{padding:20px}
+.stars{font-size:1.5em}
+}
 &amp;lt;/style&amp;gt;
 &amp;lt;/head&amp;gt;
 &amp;lt;body&amp;gt;
@@ -2338,7 +2513,27 @@ h1{font-family:&amp;#x27;Baloo 2&amp;#x27;,cursive;font-size:clamp(2em,5vw,3em);
 .result{background:white;border-radius:20px;padding:28px;max-width:500px;box-shadow:0 6px 24px rgba(0,0,0,.06);text-align:center;border:2px solid #b4530940}
 .stars{display:flex;justify-content:center;gap:3px;margin:10px 0;font-size:2em}
 .vol-btn{position:fixed;bottom:12px;right:12px;z-index:100;width:40px;height:40px;border-radius:50%;border:2px solid #d1d5db;background:white;font-size:1.2em;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.08);display:flex;align-items:center;justify-content:center}
-@media(max-width:600px){.q-text{font-size:1.3em}.opts{grid-template-columns:1fr}}
+@media(max-width:768px){
+h1{font-size:clamp(1.5em,5vw,2em)}
+.sub,.tag{font-size:.8em}
+.setup{padding:16px}
+.setup label{font-size:.95em}
+.setup select{padding:10px 12px;font-size:.9em}
+.q-card{padding:18px 12px}
+.q-text{font-size:clamp(1.2em,3.5vw,1.8em)}
+.opts{grid-template-columns:1fr;gap:6px}
+.opt{padding:12px 14px;font-size:clamp(.95em,2.5vw,1.2em)}
+.fb{font-size:1.3em}
+.top{gap:4px}
+.info{padding:5px 10px;font-size:.82em}
+.timer{font-size:1.4em}
+.sc{font-size:1em}
+.pbar{height:6px}
+.btn{padding:10px 22px;font-size:1em}
+.ex{font-size:.8em;padding:6px 10px}
+.result{padding:20px}
+.stars{font-size:1.5em}
+}
 &amp;lt;/style&amp;gt;
 &amp;lt;/head&amp;gt;
 &amp;lt;body&amp;gt;
@@ -2617,7 +2812,29 @@ h1{font-family:&amp;#x27;Baloo 2&amp;#x27;,cursive;font-size:clamp(2em,5vw,3.2em
 .r-num{font-family:&amp;#x27;Baloo 2&amp;#x27;,cursive;font-size:1.8em;color:#7c3aed}
 .r-label{font-size:.8em;color:#64748b;font-weight:700}
 .vol-btn{position:fixed;bottom:12px;right:12px;z-index:100;width:40px;height:40px;border-radius:50%;border:2px solid #d1d5db;background:white;font-size:1.2em;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.08);display:flex;align-items:center;justify-content:center}
-@media(max-width:600px){.q-text{font-size:1.3em}.opts{grid-template-columns:1fr}.mode-cards{grid-template-columns:1fr}}
+@media(max-width:768px){
+h1{font-size:clamp(1.5em,5vw,2.2em)}
+.sub,.tag{font-size:.8em}
+.setup{padding:16px}
+.mode-cards{grid-template-columns:1fr;gap:8px}
+.mode-card{padding:12px}
+.q-card{padding:18px 12px}
+.q-text{font-size:clamp(1.2em,3.5vw,1.8em)}
+.opts{grid-template-columns:1fr;gap:6px}
+.opt{padding:12px 14px;font-size:clamp(.95em,2.5vw,1.2em)}
+.fb{font-size:1.3em}
+.top{gap:4px}
+.info{padding:5px 10px;font-size:.82em}
+.timer{font-size:1.5em}
+.sc{font-size:1em}
+.level-bar{gap:4px}
+.level-badge{padding:2px 8px;font-size:.7em}
+.btn{padding:10px 22px;font-size:1em}
+.result{padding:20px}
+.result-grid{grid-template-columns:1fr 1fr 1fr;gap:8px}
+.r-num{font-size:1.4em}
+.rank-title{font-size:1.6em}
+}
 &amp;lt;/style&amp;gt;
 &amp;lt;/head&amp;gt;
 &amp;lt;body&amp;gt;
