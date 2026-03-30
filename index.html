@@ -298,14 +298,15 @@ h1{font-size:clamp(1.6em,5vw,2.2em)}
 &lt;script&gt;
 
 // === SOUND ENGINE ===
-var _aC,_sOn=true;
-function _iA(){if(!_aC)_aC=new(window.AudioContext||window.webkitAudioContext)()}
-function _pT(f,d,t,v){if(!_sOn)return;_iA();var o=_aC.createOscillator(),g=_aC.createGain();o.type=t||&#x27;sine&#x27;;o.frequency.value=f;g.gain.value=v||.15;g.gain.exponentialRampToValueAtTime(.001,_aC.currentTime+d);o.connect(g);g.connect(_aC.destination);o.start();o.stop(_aC.currentTime+d)}
-function sndOk(){_pT(523,.08,&#x27;sine&#x27;,.22);setTimeout(function(){_pT(659,.08,&#x27;sine&#x27;,.22),80);setTimeout(function(){_pT(784,.15,&#x27;sine&#x27;,.22),160)}
-function sndNo(){_pT(200,.25,&#x27;sawtooth&#x27;,.12)}
-function sndTick(){_pT(1000,.04,&#x27;sine&#x27;,.08)}
-function sndUrgent(){_pT(880,.06,&#x27;square&#x27;,.1);setTimeout(function(){_pT(880,.06,&#x27;square&#x27;,.1),120)}
-function sndStart(){_pT(440,.1,&#x27;sine&#x27;,.15);setTimeout(function(){_pT(554,.1,&#x27;sine&#x27;,.15),100);setTimeout(function(){_pT(659,.15,&#x27;sine&#x27;,.15),200)}
+var audioCtx,soundOn=true;
+function initAudio(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)()}
+function playTone(f,d,t,v){if(!soundOn)return;initAudio();var o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type=t||&#x27;sine&#x27;;o.frequency.value=f;g.gain.value=v||.15;g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+d);o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+d)}
+function sndOk(){playTone(523,.08,&#x27;sine&#x27;,.22);setTimeout(function(){playTone(659,.08,&#x27;sine&#x27;,.22)},80);setTimeout(function(){playTone(784,.15,&#x27;sine&#x27;,.22)},160)}
+function sndNo(){playTone(200,.25,&#x27;sawtooth&#x27;,.12)}
+function sndUrgent(){playTone(880,.06,&#x27;square&#x27;,.1);setTimeout(function(){playTone(880,.06,&#x27;square&#x27;,.1)},120)}
+function sndWin(){var notes=[523,587,659,784,1047];for(var i=0;i&lt;notes.length;i++){(function(n,delay){setTimeout(function(){playTone(n,.18,&#x27;sine&#x27;,.2)},delay)})(notes[i],i*100)}}
+function sndTick(){playTone(1000,.04,&#x27;sine&#x27;,.08)}
+function sndStart(){_pT(440,.1,&#x27;sine&#x27;,.15);setTimeout(function(){_pT(554,.1,&#x27;sine&#x27;,.15},100);setTimeout(function(){_pT(659,.15,&#x27;sine&#x27;,.15},200)}
 function sndWin(){[523,587,659,784,1047].forEach(function(f,i) setTimeout(function(){_pT(f,.18,&#x27;sine&#x27;,.2),i*100))}
 
 var config={},state={};
@@ -320,7 +321,7 @@ function generateQuestion(){var t=config.mathType;if(t===&#x27;add_sub&#x27;)ret
 function fmt(n){return String(n).replace(&#x27;.&#x27;,&#x27;,&#x27;)}
 var CIRCUMFERENCE=2*Math.PI*80;
 function startTimer(){clearInterval(state.timerInterval);state.timeLeft=config.timePerQ;var circle=document.getElementById(&#x27;timerCircle&#x27;);circle.style.strokeDasharray=CIRCUMFERENCE;circle.style.strokeDashoffset=0;circle.classList.remove(&#x27;warning&#x27;,&#x27;danger&#x27;);document.getElementById(&#x27;timerText&#x27;).textContent=state.timeLeft;state.timerInterval=setInterval(function(){state.timeLeft--;document.getElementById(&#x27;timerText&#x27;).textContent=state.timeLeft;var pct=1-state.timeLeft/config.timePerQ;circle.style.strokeDashoffset=CIRCUMFERENCE*pct;if(state.timeLeft&lt;=5){circle.classList.add(&#x27;danger&#x27;);sndUrgent();}else if(state.timeLeft&lt;=config.timePerQ*.4){circle.classList.add(&#x27;warning&#x27;);sndTick();}if(state.timeLeft&lt;=0){clearInterval(state.timerInterval);timeUp()}},1000)}
-function timeUp(){state.answered=true;sndNo();var fb=document.getElementById(&#x27;feedback&#x27;);fb.className=&#x27;feedback wrong&#x27;;fb.innerHTML=&#x27;⏰ Hết giờ! Đáp án: &lt;strong&gt;&#x27;+(typeof state.currentQ.answer===&#x27;number&#x27;?fmt(state.currentQ.answer):state.currentQ.answer)+&#x27;&lt;/strong&gt;&#x27;;document.getElementById(&#x27;answerInput&#x27;).classList.add(&#x27;wrong&#x27;);document.getElementById(&#x27;questionCard&#x27;).classList.add(&#x27;wrong-flash&#x27;);setTimeout(function(){document.getElementById(&#x27;questionCard&#x27;).classList.remove(&#x27;wrong-flash&#x27;),600)}
+function timeUp(){state.answered=true;sndNo();var fb=document.getElementById(&#x27;feedback&#x27;);fb.className=&#x27;feedback wrong&#x27;;fb.innerHTML=&#x27;⏰ Hết giờ! Đáp án: &lt;strong&gt;&#x27;+(typeof state.currentQ.answer===&#x27;number&#x27;?fmt(state.currentQ.answer):state.currentQ.answer)+&#x27;&lt;/strong&gt;&#x27;;document.getElementById(&#x27;answerInput&#x27;).classList.add(&#x27;wrong&#x27;);document.getElementById(&#x27;questionCard&#x27;).classList.add(&#x27;wrong-flash&#x27;);setTimeout(function(){document.getElementById(&#x27;questionCard&#x27;).classList.remove(&#x27;wrong-flash&#x27;},600)}
 function startGame(){config.mathType=document.getElementById(&#x27;mathType&#x27;).value;config.timePerQ=parseInt(document.getElementById(&#x27;timePerQ&#x27;).value);config.totalQ=parseInt(document.getElementById(&#x27;totalQ&#x27;).value);config.teamCount=parseInt(document.getElementById(&#x27;teamCount&#x27;).value);config.teams=[];document.querySelectorAll(&#x27;.team-name&#x27;).forEach(function(inp){config.teams.push(inp.value||&#x27;Tổ&#x27;));state={currentQ:null,questionNum:0,scores:new Array(Math.max(config.teamCount,1)).fill(0),correct:new Array(Math.max(config.teamCount,1)).fill(0),currentTeam:0,answered:false,timerInterval:null};document.getElementById(&#x27;setupScreen&#x27;).classList.add(&#x27;hidden&#x27;);document.getElementById(&#x27;gameScreen&#x27;).classList.remove(&#x27;hidden&#x27;);renderScoreBoard();showNextQuestion()}
 function renderScoreBoard(){var sb=document.getElementById(&#x27;scoreBoard&#x27;);sb.innerHTML=&#x27;&#x27;;if(config.teamCount===0){sb.innerHTML=&#x27;&lt;div class=&quot;team-score active&quot;&gt;🌟 Điểm: &lt;span id=&quot;soloScore&quot;&gt;0&lt;/span&gt;&lt;/div&gt;&#x27;;return}for(var i=0;i&lt;config.teamCount;i++){var colors=[&#x27;#ef4444&#x27;,&#x27;#22c55e&#x27;,&#x27;#f59e0b&#x27;,&#x27;#8b5cf6&#x27;];var div=document.createElement(&#x27;div&#x27;);div.className=&#x27;team-score&#x27;+(i===state.currentTeam?&#x27; active&#x27;:&#x27;&#x27;);div.id=&#x27;team&#x27;+i;div.style.borderColor=colors[i%4];div.innerHTML=(config.teams[i])+&#x27;: &lt;strong&gt;&#x27;+(state.scores[i])+&#x27;&lt;/strong&gt;&#x27;;sb.appendChild(div)}}
 function showNextQuestion(){state.questionNum++;if(state.questionNum&gt;config.totalQ){showResults();return}state.answered=false;state.currentQ=generateQuestion();document.getElementById(&#x27;roundInfo&#x27;).textContent=&#x27;Câu &#x27;+(state.questionNum)+&#x27;/&#x27;+(config.totalQ);document.getElementById(&#x27;qLabel&#x27;).textContent=state.currentQ.label;document.getElementById(&#x27;expression&#x27;).textContent=state.currentQ.expr;document.getElementById(&#x27;feedback&#x27;).innerHTML=&#x27;&#x27;;document.getElementById(&#x27;feedback&#x27;).className=&#x27;feedback&#x27;;var inp=document.getElementById(&#x27;answerInput&#x27;);inp.value=&#x27;&#x27;;inp.className=&#x27;answer-input&#x27;;inp.focus();document.getElementById(&#x27;questionCard&#x27;).className=&#x27;question-card&#x27;;if(config.teamCount&gt;0){state.currentTeam=(state.questionNum-1)%config.teamCount;renderScoreBoard()}startTimer()}
@@ -328,7 +329,7 @@ function checkAnswer(){if(state.answered)return;state.answered=true;clearInterva
 function nextQuestion(){showNextQuestion()}
 function showResults(){clearInterval(state.timerInterval);document.getElementById(&#x27;gameScreen&#x27;).classList.add(&#x27;hidden&#x27;);document.getElementById(&#x27;resultScreen&#x27;).classList.remove(&#x27;hidden&#x27;);var table=document.getElementById(&#x27;resultTable&#x27;);var html=&#x27;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Hạng&lt;/th&gt;&lt;th&gt;Đội&lt;/th&gt;&lt;th&gt;Điểm&lt;/th&gt;&lt;th&gt;Đúng&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&#x27;;if(config.teamCount===0){html+=&#x27;&lt;tr&gt;&lt;td&gt;🥇&lt;/td&gt;&lt;td&gt;Bạn&lt;/td&gt;&lt;td&gt;&#x27;+(state.scores[0])+&#x27;&lt;/td&gt;&lt;td&gt;&#x27;+(state.correct[0])+&#x27;/&#x27;+(config.totalQ)+&#x27;&lt;/td&gt;&lt;/tr&gt;&#x27;;var pct=Math.round(state.correct[0]/config.totalQ*100);document.getElementById(&#x27;winnerName&#x27;).textContent=pct&gt;=80?&#x27;⭐ Vua Tính Nhẩm! ⭐&#x27;:pct&gt;=50?&#x27;👍 Khá lắm!&#x27;:&#x27;💪 Cố thêm nhé!&#x27;}else{var ranked=state.scores.map(function(s,i) ({name:config.teams[i],score:s,correct:state.correct[i]}));ranked.sort(function(a,b) b.score-a.score);var medals=[&#x27;🥇&#x27;,&#x27;🥈&#x27;,&#x27;🥉&#x27;,&#x27;4️⃣&#x27;];ranked.forEach(function(t,i) {html+=&#x27;&lt;tr&gt;&lt;td&gt;&#x27;+(medals[i]||i+1)+&#x27;&lt;/td&gt;&lt;td&gt;&#x27;+(t.name)+&#x27;&lt;/td&gt;&lt;td&gt;&#x27;+(t.score)+&#x27;&lt;/td&gt;&lt;td&gt;&#x27;+(t.correct)+&#x27;/&#x27;+(config.totalQ)+&#x27;&lt;/td&gt;&lt;/tr&gt;&#x27;});document.getElementById(&#x27;winnerName&#x27;).textContent=&#x27;🎊 &#x27;+(ranked[0].name)+&#x27; chiến thắng! 🎊&#x27;}html+=&#x27;&lt;/tbody&gt;&#x27;;table.innerHTML=html;launchConfetti()}
 function resetGame(){document.getElementById(&#x27;resultScreen&#x27;).classList.add(&#x27;hidden&#x27;);state.questionNum=0;state.scores.fill(0);state.correct.fill(0);state.currentTeam=0;document.getElementById(&#x27;gameScreen&#x27;).classList.remove(&#x27;hidden&#x27;);renderScoreBoard();showNextQuestion()}
-function launchConfetti(){sndWin();var colors=[&#x27;#ef4444&#x27;,&#x27;#22c55e&#x27;,&#x27;#f59e0b&#x27;,&#x27;#8b5cf6&#x27;,&#x27;#3b82f6&#x27;,&#x27;#ec4899&#x27;];for(var i=0;i&lt;60;i++){var p=document.createElement(&#x27;div&#x27;);p.className=&#x27;confetti-piece&#x27;;p.style.left=Math.random()*100+&#x27;vw&#x27;;p.style.background=colors[Math.floor(Math.random()*colors.length)];p.style.setProperty(&#x27;--fall-duration&#x27;,(2+Math.random()*3)+&#x27;s&#x27;);p.style.setProperty(&#x27;--rotation&#x27;,(Math.random()*720-360)+&#x27;deg&#x27;);p.style.animationDelay=Math.random()*2+&#x27;s&#x27;;p.style.borderRadius=Math.random()&gt;.5?&#x27;50%&#x27;:&#x27;2px&#x27;;p.style.width=(6+Math.random()*8)+&#x27;px&#x27;;p.style.height=(8+Math.random()*14)+&#x27;px&#x27;;document.body.appendChild(p);setTimeout(function(){p.remove(),5000)}}
+function launchConfetti(){sndWin();var colors=[&#x27;#ef4444&#x27;,&#x27;#22c55e&#x27;,&#x27;#f59e0b&#x27;,&#x27;#8b5cf6&#x27;,&#x27;#3b82f6&#x27;,&#x27;#ec4899&#x27;];for(var i=0;i&lt;60;i++){var p=document.createElement(&#x27;div&#x27;);p.className=&#x27;confetti-piece&#x27;;p.style.left=Math.random()*100+&#x27;vw&#x27;;p.style.background=colors[Math.floor(Math.random()*colors.length)];p.style.setProperty(&#x27;--fall-duration&#x27;,(2+Math.random()*3)+&#x27;s&#x27;);p.style.setProperty(&#x27;--rotation&#x27;,(Math.random()*720-360)+&#x27;deg&#x27;);p.style.animationDelay=Math.random()*2+&#x27;s&#x27;;p.style.borderRadius=Math.random()&gt;.5?&#x27;50%&#x27;:&#x27;2px&#x27;;p.style.width=(6+Math.random()*8)+&#x27;px&#x27;;p.style.height=(8+Math.random()*14)+&#x27;px&#x27;;document.body.appendChild(p);setTimeout(function(){p.remove(},5000)}}
 document.getElementById(&#x27;answerInput&#x27;).addEventListener(&#x27;keydown&#x27;,function(e){return {if(e.key===&#x27;Enter&#x27;)checkAnswer()});
 
 function resetAll(){
@@ -475,12 +476,11 @@ function _pT(f,d,t,v){if(!_sOn)return;_iA();var o=_aC.createOscillator(),g=_aC.c
 function sndClick(){_pT(600,.04,&#x27;sine&#x27;,.12);_pT(800,.03,&#x27;sine&#x27;,.08)}
 function sndSelect(){_pT(440,.06,&#x27;sine&#x27;,.14);setTimeout(function(){_pT(550,.05,&#x27;sine&#x27;,.1)},50)}
 function sndPair(){_pT(523,.06,&#x27;sine&#x27;,.16);setTimeout(function(){_pT(659,.06,&#x27;sine&#x27;,.16)},70);setTimeout(function(){_pT(784,.1,&#x27;sine&#x27;,.14)},140)}
-function sndOk(){_pT(523,.08,&#x27;sine&#x27;,.22);setTimeout(function(){_pT(659,.08,&#x27;sine&#x27;,.22),80);setTimeout(function(){_pT(784,.15,&#x27;sine&#x27;,.22),160)}
+function sndOk(){_pT(523,.08,&#x27;sine&#x27;,.22);setTimeout(function(){_pT(659,.08,&#x27;sine&#x27;,.22)},80);setTimeout(function(){_pT(784,.15,&#x27;sine&#x27;,.22)},160)}
 function sndNo(){_pT(200,.25,&#x27;sawtooth&#x27;,.12)}
 function sndTick(){_pT(1000,.04,&#x27;sine&#x27;,.08)}
-function sndUrgent(){_pT(880,.06,&#x27;square&#x27;,.1);setTimeout(function(){_pT(880,.06,&#x27;square&#x27;,.1),120)}
-function sndStart(){_pT(440,.1,&#x27;sine&#x27;,.15);setTimeout(function(){_pT(554,.1,&#x27;sine&#x27;,.15),100);setTimeout(function(){_pT(659,.15,&#x27;sine&#x27;,.15),200)}
-function sndWin(){[523,587,659,784,1047].forEach(function(f,i) setTimeout(function(){_pT(f,.18,&#x27;sine&#x27;,.2),i*100))}
+function sndUrgent(){_pT(880,.06,&#x27;square&#x27;,.1);setTimeout(function(){_pT(880,.06,&#x27;square&#x27;,.1)},120)}
+function sndWin(){var notes=[523,587,659,784,1047];for(var i=0;i&lt;notes.length;i++){(function(n,delay){setTimeout(function(){_pT(n,.18,&#x27;sine&#x27;,.2)},delay)})(notes[i],i*100)}}
 
 var config={},state={};
 function getColTitles(t){return{dong_nghia:[&#x27;📌 Từ gốc&#x27;,&#x27;📌 Từ đồng nghĩa&#x27;],trai_nghia:[&#x27;📌 Từ&#x27;,&#x27;📌 Từ trái nghĩa&#x27;],tu_nhieu_nghia:[&#x27;📌 Từ / Nghĩa&#x27;,&#x27;📌 Giải nghĩa&#x27;],thanh_ngu:[&#x27;📌 Phần đầu&#x27;,&#x27;📌 Phần sau&#x27;],quan_he_tu:[&#x27;📌 Từ thứ nhất&#x27;,&#x27;📌 Từ thứ hai&#x27;]}[t]||[&#x27;📌 Cột A&#x27;,&#x27;📌 Cột B&#x27;]}
@@ -492,7 +492,7 @@ function renderPairCounter(){var c=document.getElementById(&#x27;pairCounter&#x2
 function selectWord(el,side,idx){if(state.roundChecked||el.classList.contains(&#x27;matched&#x27;))return;sndSelect();document.querySelectorAll(&#x27;.col-&#x27;+(side)+&#x27; .match-word.selected&#x27;).forEach(function(w){w.classList.remove(&#x27;selected&#x27;));el.classList.add(&#x27;selected&#x27;);if(side===&#x27;left&#x27;)state.selectedLeft=idx;else state.selectedRight=idx;if(state.selectedLeft!==null&amp;&amp;state.selectedRight!==null){makeMatch(state.selectedLeft,state.selectedRight);state.selectedLeft=null;state.selectedRight=null}}
 function makeMatch(li,ri){if(state.matches[li]!==undefined){var pr=state.matches[li];document.querySelectorAll(&#x27;.col-right .match-word&#x27;).forEach(function(w){{if(parseInt(w.dataset.idx)===pr)w.classList.remove(&#x27;matched&#x27;,&#x27;selected&#x27;)});document.querySelectorAll(&#x27;.col-left .match-word&#x27;).forEach(function(w){{if(parseInt(w.dataset.idx)===li)w.classList.remove(&#x27;matched&#x27;,&#x27;selected&#x27;)})}Object.keys(state.matches).forEach(function(k){{if(state.matches[k]===ri&amp;&amp;parseInt(k)!==li){delete state.matches[k];document.querySelectorAll(&#x27;.col-left .match-word&#x27;).forEach(function(w){{if(parseInt(w.dataset.idx)===parseInt(k))w.classList.remove(&#x27;matched&#x27;,&#x27;selected&#x27;)})}});state.matches[li]=ri;sndPair();document.querySelectorAll(&#x27;.match-word.selected&#x27;).forEach(function(w){{w.classList.remove(&#x27;selected&#x27;);w.classList.add(&#x27;matched&#x27;)});var mc=Object.keys(state.matches).length;for(var i=0;i&lt;config.pairsPerRound;i++){var d=document.getElementById(&#x27;dot&#x27;+i);if(i&lt;mc){d.style.borderColor=&#x27;#7c3aed&#x27;;d.style.background=&#x27;#ede9fe&#x27;}else{d.style.borderColor=&#x27;#d1d5db&#x27;;d.style.background=&#x27;white&#x27;}}}
 function clearSelection(){if(state.roundChecked)return;sndClick();state.selectedLeft=null;state.selectedRight=null;state.matches={};document.querySelectorAll(&#x27;.match-word&#x27;).forEach(function(w){w.classList.remove(&#x27;selected&#x27;,&#x27;matched&#x27;,&#x27;correct-match&#x27;,&#x27;wrong-match&#x27;));renderPairCounter()}
-function checkAllPairs(){if(state.roundChecked)return;clearInterval(state.timerInterval);state.roundChecked=true;var cc=0;var tp=state.pairs.length;Object.entries(state.matches).forEach(function(pair){var li=pair[0],ri=pair[1]; {var ok=parseInt(li)===parseInt(ri);var le=document.querySelector(&#x27;.col-left .match-word[data-idx=&quot;&#x27;+(li)+&#x27;&quot;]&#x27;);var re=document.querySelector(&#x27;.col-right .match-word[data-idx=&quot;&#x27;+(ri)+&#x27;&quot;]&#x27;);if(ok){cc++;(le&amp;&amp;le.classList.add)(&#x27;correct-match&#x27;);if(re)re.classList.add(&#x27;correct-match&#x27;)}else{(le&amp;&amp;le.classList.add)(&#x27;wrong-match&#x27;);if(re)re.classList.add(&#x27;wrong-match&#x27;)}});var di=0;Object.entries(state.matches).forEach(function(pair){var li=pair[0],ri=pair[1]; {var d=document.getElementById(&#x27;dot&#x27;+di);if(parseInt(li)===parseInt(ri)){d.classList.add(&#x27;correct&#x27;);d.textContent=&#x27;✓&#x27;}else{d.classList.add(&#x27;wrong&#x27;);d.textContent=&#x27;✗&#x27;}di++});var rs=cc*10;state.totalScore+=rs;state.totalCorrect+=cc;state.totalPairs+=tp;document.getElementById(&#x27;scoreBadge&#x27;).textContent=&#x27;⭐ &#x27;+state.totalScore+&#x27; điểm&#x27;;var fb=document.getElementById(&#x27;feedbackMsg&#x27;);if(cc===tp){fb.className=&#x27;feedback-msg correct&#x27;;sndOk();fb.textContent=&#x27;🎉 Tuyệt vời! Đúng hết &#x27;+(tp)+&#x27;/&#x27;+(tp)+&#x27;! +&#x27;+(rs)+&#x27; điểm&#x27;}else{sndNo();fb.className=&#x27;feedback-msg wrong&#x27;;fb.textContent=&#x27;Đúng &#x27;+(cc)+&#x27;/&#x27;+(tp)+&#x27;. +&#x27;+(rs)+&#x27; điểm&#x27;}setTimeout(function(){{Object.entries(state.matches).forEach(function(pair){var li=pair[0],ri=pair[1]; {if(parseInt(li)!==parseInt(ri)){var cr=document.querySelector(&#x27;.col-right .match-word[data-idx=&quot;&#x27;+(li)+&#x27;&quot;]&#x27;);if(cr){cr.style.outline=&#x27;3px dashed #16a34a&#x27;;cr.style.outlineOffset=&#x27;3px&#x27;}}})},800);document.getElementById(&#x27;btnCheckAll&#x27;).classList.add(&#x27;hidden&#x27;);document.getElementById(&#x27;btnNextRound&#x27;).classList.remove(&#x27;hidden&#x27;);document.getElementById(&#x27;btnNextRound&#x27;).textContent=state.round&gt;=config.totalRounds?&#x27;🏆 Xem kết quả&#x27;:&#x27;Vòng tiếp ➜&#x27;}
+function checkAllPairs(){if(state.roundChecked)return;clearInterval(state.timerInterval);state.roundChecked=true;var cc=0;var tp=state.pairs.length;Object.entries(state.matches).forEach(function(pair){var li=pair[0],ri=pair[1];var ok=parseInt(li)===parseInt(ri);var le=document.querySelector(&#x27;.col-left .match-word[data-idx=&quot;&#x27;+(li)+&#x27;&quot;]&#x27;);var re=document.querySelector(&#x27;.col-right .match-word[data-idx=&quot;&#x27;+(ri)+&#x27;&quot;]&#x27;);if(ok){cc++;if(le)le.classList.add(&#x27;correct-match&#x27;);if(re)re.classList.add(&#x27;correct-match&#x27;)}else{if(le)le.classList.add(&#x27;wrong-match&#x27;);if(re)re.classList.add(&#x27;wrong-match&#x27;)}});var di=0;Object.entries(state.matches).forEach(function(pair){var li=pair[0],ri=pair[1];var d=document.getElementById(&#x27;dot&#x27;+di);if(parseInt(li)===parseInt(ri)){d.classList.add(&#x27;correct&#x27;);d.textContent=&#x27;✓&#x27;}else{d.classList.add(&#x27;wrong&#x27;);d.textContent=&#x27;✗&#x27;}di++});var rs=cc*10;state.totalScore+=rs;state.totalCorrect+=cc;state.totalPairs+=tp;document.getElementById(&#x27;scoreBadge&#x27;).textContent=&#x27;⭐ &#x27;+state.totalScore+&#x27; điểm&#x27;;var fb=document.getElementById(&#x27;feedbackMsg&#x27;);if(cc===tp){fb.className=&#x27;feedback-msg correct&#x27;;sndOk();fb.textContent=&#x27;🎉 Tuyệt vời! Đúng hết &#x27;+(tp)+&#x27;/&#x27;+(tp)+&#x27;! +&#x27;+(rs)+&#x27; điểm&#x27;}else{sndNo();fb.className=&#x27;feedback-msg wrong&#x27;;fb.textContent=&#x27;Đúng &#x27;+(cc)+&#x27;/&#x27;+(tp)+&#x27;. +&#x27;+(rs)+&#x27; điểm&#x27;}setTimeout(function(){Object.entries(state.matches).forEach(function(pair){var li=pair[0],ri=pair[1];if(parseInt(li)!==parseInt(ri)){var cr=document.querySelector(&#x27;.col-right .match-word[data-idx=&quot;&#x27;+(li)+&#x27;&quot;]&#x27;);if(cr){cr.style.outline=&#x27;3px dashed #16a34a&#x27;;cr.style.outlineOffset=&#x27;3px&#x27;}}})},800);document.getElementById(&#x27;btnCheckAll&#x27;).classList.add(&#x27;hidden&#x27;);document.getElementById(&#x27;btnNextRound&#x27;).classList.remove(&#x27;hidden&#x27;);document.getElementById(&#x27;btnNextRound&#x27;).textContent=state.round&gt;=config.totalRounds?&#x27;🏆 Xem kết quả&#x27;:&#x27;Vòng tiếp ➜&#x27;}
 function startTimer(){clearInterval(state.timerInterval);if(config.roundTime===0){document.getElementById(&#x27;timerDisplay&#x27;).textContent=&#x27;⏱️ ∞&#x27;;return}state.timeLeft=config.roundTime;updateTimerDisplay();state.timerInterval=setInterval(function(){state.timeLeft--;updateTimerDisplay();if(state.timeLeft&lt;=0){clearInterval(state.timerInterval);if(!state.roundChecked)checkAllPairs()}},1000)}
 function updateTimerDisplay(){var el=document.getElementById(&#x27;timerDisplay&#x27;);el.textContent=&#x27;⏱️ &#x27;+state.timeLeft+&#x27;s&#x27;;el.classList.toggle(&#x27;urgent&#x27;,state.timeLeft&lt;=10)}
 function showResults(){clearInterval(state.timerInterval);document.getElementById(&#x27;gameScreen&#x27;).classList.add(&#x27;hidden&#x27;);document.getElementById(&#x27;resultScreen&#x27;).classList.remove(&#x27;hidden&#x27;);var pct=state.totalPairs&gt;0?Math.round(state.totalCorrect/state.totalPairs*100):0;var emoji,title;if(pct&gt;=90){emoji=&#x27;🏆&#x27;;title=&#x27;⭐ Nhà Ngôn Ngữ Xuất Sắc! ⭐&#x27;}else if(pct&gt;=70){emoji=&#x27;🎉&#x27;;title=&#x27;👍 Giỏi lắm!&#x27;}else if(pct&gt;=50){emoji=&#x27;💪&#x27;;title=&#x27;Khá tốt, cố thêm!&#x27;}else{emoji=&#x27;📚&#x27;;title=&#x27;Cần ôn luyện thêm!&#x27;}document.getElementById(&#x27;resultEmoji&#x27;).textContent=emoji;document.getElementById(&#x27;resultTitle&#x27;).textContent=title;document.getElementById(&#x27;resultStats&#x27;).innerHTML=&#x27;&lt;div class=&quot;stat-box&quot;&gt;&lt;div class=&quot;stat-number&quot;&gt;&#x27;+(state.totalScore)+&#x27;&lt;/div&gt;&lt;div class=&quot;stat-label&quot;&gt;Tổng điểm&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;stat-box&quot;&gt;&lt;div class=&quot;stat-number&quot;&gt;&#x27;+(state.totalCorrect)+&#x27;/&#x27;+(state.totalPairs)+&#x27;&lt;/div&gt;&lt;div class=&quot;stat-label&quot;&gt;Cặp đúng&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;stat-box&quot;&gt;&lt;div class=&quot;stat-number&quot;&gt;&#x27;+(pct)+&#x27;%&lt;/div&gt;&lt;div class=&quot;stat-label&quot;&gt;Tỉ lệ&lt;/div&gt;&lt;/div&gt;&#x27;}
@@ -628,14 +628,15 @@ h1{font-size:clamp(1.5em,5vw,2em)}
 var BANKS={toan_stp:[{q:&quot;3,5 + 2,7 = ?&quot;,opts:[&quot;5,2&quot;,&quot;6,2&quot;,&quot;6,7&quot;,&quot;5,7&quot;],ans:1},{q:&quot;8,4 − 3,6 = ?&quot;,opts:[&quot;4,8&quot;,&quot;5,8&quot;,&quot;4,2&quot;,&quot;5,2&quot;],ans:0},{q:&quot;12,5 + 7,8 = ?&quot;,opts:[&quot;20,3&quot;,&quot;19,3&quot;,&quot;20,8&quot;,&quot;19,8&quot;],ans:0},{q:&quot;15,2 − 6,7 = ?&quot;,opts:[&quot;8,5&quot;,&quot;9,5&quot;,&quot;8,7&quot;,&quot;9,7&quot;],ans:0},{q:&quot;4,25 + 3,75 = ?&quot;,opts:[&quot;7,00&quot;,&quot;8,00&quot;,&quot;7,50&quot;,&quot;8,50&quot;],ans:1},{q:&quot;20,0 − 8,5 = ?&quot;,opts:[&quot;12,5&quot;,&quot;11,5&quot;,&quot;12,0&quot;,&quot;11,0&quot;],ans:1},{q:&quot;6,3 + 4,9 = ?&quot;,opts:[&quot;10,2&quot;,&quot;11,2&quot;,&quot;10,9&quot;,&quot;11,9&quot;],ans:1},{q:&quot;9,1 − 2,8 = ?&quot;,opts:[&quot;7,3&quot;,&quot;6,3&quot;,&quot;6,9&quot;,&quot;7,9&quot;],ans:1},{q:&quot;1,5 + 2,5 + 3,5 = ?&quot;,opts:[&quot;6,5&quot;,&quot;7,0&quot;,&quot;7,5&quot;,&quot;8,0&quot;],ans:2},{q:&quot;100 − 45,5 = ?&quot;,opts:[&quot;55,5&quot;,&quot;54,5&quot;,&quot;65,5&quot;,&quot;64,5&quot;],ans:1},{q:&quot;25,6 + 14,4 = ?&quot;,opts:[&quot;39,0&quot;,&quot;40,0&quot;,&quot;39,6&quot;,&quot;40,6&quot;],ans:1},{q:&quot;50,0 − 12,75 = ?&quot;,opts:[&quot;37,25&quot;,&quot;38,25&quot;,&quot;37,75&quot;,&quot;38,75&quot;],ans:0}],toan_nhan:[{q:&quot;2,5 × 4 = ?&quot;,opts:[&quot;8&quot;,&quot;10&quot;,&quot;12&quot;,&quot;9&quot;],ans:1},{q:&quot;3,6 × 5 = ?&quot;,opts:[&quot;15&quot;,&quot;16&quot;,&quot;18&quot;,&quot;20&quot;],ans:2},{q:&quot;12,5 × 8 = ?&quot;,opts:[&quot;96&quot;,&quot;100&quot;,&quot;108&quot;,&quot;90&quot;],ans:1},{q:&quot;0,25 × 12 = ?&quot;,opts:[&quot;2&quot;,&quot;3&quot;,&quot;2,5&quot;,&quot;3,5&quot;],ans:1},{q:&quot;4,5 × 2 = ?&quot;,opts:[&quot;8&quot;,&quot;9&quot;,&quot;8,5&quot;,&quot;9,5&quot;],ans:1},{q:&quot;15,6 ÷ 4 = ?&quot;,opts:[&quot;3,6&quot;,&quot;3,9&quot;,&quot;4,1&quot;,&quot;3,8&quot;],ans:1},{q:&quot;24,8 ÷ 8 = ?&quot;,opts:[&quot;3,0&quot;,&quot;3,1&quot;,&quot;2,9&quot;,&quot;3,2&quot;],ans:1},{q:&quot;7,5 × 6 = ?&quot;,opts:[&quot;42&quot;,&quot;45&quot;,&quot;48&quot;,&quot;40&quot;],ans:1},{q:&quot;0,5 × 0,5 = ?&quot;,opts:[&quot;0,1&quot;,&quot;0,25&quot;,&quot;0,5&quot;,&quot;1,0&quot;],ans:1},{q:&quot;36,9 ÷ 3 = ?&quot;,opts:[&quot;12,3&quot;,&quot;11,3&quot;,&quot;13,3&quot;,&quot;12,0&quot;],ans:0}],toan_phanso:[{q:&quot;1/4 + 2/4 = ?&quot;,opts:[&quot;3/4&quot;,&quot;3/8&quot;,&quot;2/4&quot;,&quot;1/2&quot;],ans:0},{q:&quot;5/6 − 2/6 = ?&quot;,opts:[&quot;3/6&quot;,&quot;2/6&quot;,&quot;1/2&quot;,&quot;Cả A và C&quot;],ans:3},{q:&quot;So sánh: 3/5 ☐ 2/5&quot;,opts:[&quot;&gt;&quot;,&quot;&lt;&quot;,&quot;=&quot;,&quot;Không SS được&quot;],ans:0},{q:&quot;2/3 + 1/6 = ?&quot;,opts:[&quot;3/6&quot;,&quot;5/6&quot;,&quot;3/9&quot;,&quot;1/2&quot;],ans:1},{q:&quot;PS nào bằng 1/2?&quot;,opts:[&quot;2/3&quot;,&quot;3/6&quot;,&quot;2/5&quot;,&quot;4/6&quot;],ans:1},{q:&quot;3/4 − 1/2 = ?&quot;,opts:[&quot;1/4&quot;,&quot;2/4&quot;,&quot;1/2&quot;,&quot;2/2&quot;],ans:0},{q:&quot;So sánh: 2/3 ☐ 3/4&quot;,opts:[&quot;&gt;&quot;,&quot;&lt;&quot;,&quot;=&quot;,&quot;Cùng bằng 1&quot;],ans:1},{q:&quot;PSTP của 1/4?&quot;,opts:[&quot;25/10&quot;,&quot;25/100&quot;,&quot;4/10&quot;,&quot;4/100&quot;],ans:1},{q:&quot;7/10 + 3/10 = ?&quot;,opts:[&quot;10/10&quot;,&quot;10/20&quot;,&quot;1&quot;,&quot;Cả A và C&quot;],ans:3},{q:&quot;Rút gọn 6/8 = ?&quot;,opts:[&quot;3/4&quot;,&quot;2/4&quot;,&quot;3/8&quot;,&quot;6/4&quot;],ans:0}],toan_phantram:[{q:&quot;25% của 200 = ?&quot;,opts:[&quot;25&quot;,&quot;50&quot;,&quot;75&quot;,&quot;100&quot;],ans:1},{q:&quot;10% của 150 = ?&quot;,opts:[&quot;10&quot;,&quot;15&quot;,&quot;20&quot;,&quot;25&quot;],ans:1},{q:&quot;50% của 86 = ?&quot;,opts:[&quot;43&quot;,&quot;42&quot;,&quot;44&quot;,&quot;40&quot;],ans:0},{q:&quot;20% của 350 = ?&quot;,opts:[&quot;60&quot;,&quot;70&quot;,&quot;80&quot;,&quot;65&quot;],ans:1},{q:&quot;Giảm 30% giá 200k = ?&quot;,opts:[&quot;140&quot;,&quot;160&quot;,&quot;170&quot;,&quot;130&quot;],ans:0},{q:&quot;15% của 400 = ?&quot;,opts:[&quot;50&quot;,&quot;55&quot;,&quot;60&quot;,&quot;65&quot;],ans:2},{q:&quot;75% của 80 = ?&quot;,opts:[&quot;55&quot;,&quot;60&quot;,&quot;65&quot;,&quot;70&quot;],ans:1},{q:&quot;40 là ?% của 200&quot;,opts:[&quot;15%&quot;,&quot;20%&quot;,&quot;25%&quot;,&quot;30%&quot;],ans:1},{q:&quot;5% của 1000 = ?&quot;,opts:[&quot;5&quot;,&quot;50&quot;,&quot;500&quot;,&quot;100&quot;],ans:1},{q:&quot;Tăng 10% từ 500 = ?&quot;,opts:[&quot;510&quot;,&quot;550&quot;,&quot;600&quot;,&quot;505&quot;],ans:1}],toan_hinhoc:[{q:&quot;S △ đáy 8cm, cao 6cm?&quot;,opts:[&quot;48 cm²&quot;,&quot;24 cm²&quot;,&quot;14 cm²&quot;,&quot;28 cm²&quot;],ans:1},{q:&quot;S h.thang đáy 5+7, cao 4?&quot;,opts:[&quot;24 cm²&quot;,&quot;48 cm²&quot;,&quot;20 cm²&quot;,&quot;28 cm²&quot;],ans:0},{q:&quot;CV ⊙ r=7cm? (π≈3,14)&quot;,opts:[&quot;43,96&quot;,&quot;21,98&quot;,&quot;153,86&quot;,&quot;44&quot;],ans:0},{q:&quot;S ⊙ r=5cm?&quot;,opts:[&quot;78,5&quot;,&quot;31,4&quot;,&quot;15,7&quot;,&quot;157&quot;],ans:0},{q:&quot;S △ đáy 10, cao 5?&quot;,opts:[&quot;50 cm²&quot;,&quot;25 cm²&quot;,&quot;15 cm²&quot;,&quot;30 cm²&quot;],ans:1},{q:&quot;S h.thang đáy 6+10, cao 5?&quot;,opts:[&quot;80 cm²&quot;,&quot;40 cm²&quot;,&quot;35 cm²&quot;,&quot;45 cm²&quot;],ans:1},{q:&quot;CV ⊙ d=10cm?&quot;,opts:[&quot;31,4&quot;,&quot;15,7&quot;,&quot;78,5&quot;,&quot;62,8&quot;],ans:0},{q:&quot;S △ vuông 3cm,4cm?&quot;,opts:[&quot;12 cm²&quot;,&quot;6 cm²&quot;,&quot;7 cm²&quot;,&quot;14 cm²&quot;],ans:1},{q:&quot;S ⊙ r=10cm?&quot;,opts:[&quot;314&quot;,&quot;628&quot;,&quot;31,4&quot;,&quot;62,8&quot;],ans:0},{q:&quot;S h.thang 8+12, cao 7?&quot;,opts:[&quot;140&quot;,&quot;70&quot;,&quot;100&quot;,&quot;56&quot;],ans:1}],tv_dongnghia:[{q:&quot;Đồng nghĩa &#x27;xinh đẹp&#x27;?&quot;,opts:[&quot;xấu xí&quot;,&quot;xinh xắn&quot;,&quot;bình thường&quot;,&quot;cao lớn&quot;],ans:1},{q:&quot;Đồng nghĩa &#x27;gan dạ&#x27;?&quot;,opts:[&quot;nhút nhát&quot;,&quot;dũng cảm&quot;,&quot;vui vẻ&quot;,&quot;hiền lành&quot;],ans:1},{q:&quot;&#x27;Bao la&#x27; đồng nghĩa?&quot;,opts:[&quot;nhỏ bé&quot;,&quot;chật hẹp&quot;,&quot;mênh mông&quot;,&quot;ngắn&quot;],ans:2},{q:&quot;Đồng nghĩa &#x27;chăm chỉ&#x27;?&quot;,opts:[&quot;lười biếng&quot;,&quot;siêng năng&quot;,&quot;cẩu thả&quot;,&quot;nóng nảy&quot;],ans:1},{q:&quot;&#x27;Thông minh&#x27; đồng nghĩa?&quot;,opts:[&quot;sáng dạ&quot;,&quot;chậm hiểu&quot;,&quot;ngốc&quot;,&quot;lười&quot;],ans:0},{q:&quot;Đồng nghĩa &#x27;vui vẻ&#x27;?&quot;,opts:[&quot;buồn bã&quot;,&quot;hân hoan&quot;,&quot;giận dữ&quot;,&quot;lo lắng&quot;],ans:1},{q:&quot;&#x27;Kiên nhẫn&#x27; đồng nghĩa?&quot;,opts:[&quot;nóng vội&quot;,&quot;nhẫn nại&quot;,&quot;cẩu thả&quot;,&quot;kiêu căng&quot;],ans:1},{q:&quot;Đồng nghĩa &#x27;giúp đỡ&#x27;?&quot;,opts:[&quot;cản trở&quot;,&quot;hỗ trợ&quot;,&quot;phá hoại&quot;,&quot;bỏ mặc&quot;],ans:1},{q:&quot;&#x27;Trung thực&#x27; đồng nghĩa?&quot;,opts:[&quot;gian dối&quot;,&quot;thật thà&quot;,&quot;kiêu căng&quot;,&quot;nhút nhát&quot;],ans:1},{q:&quot;Đồng nghĩa &#x27;ấm áp&#x27;?&quot;,opts:[&quot;lạnh lẽo&quot;,&quot;mát mẻ&quot;,&quot;ấm cúng&quot;,&quot;nóng bức&quot;],ans:2}],tv_trainghia:[{q:&quot;Trái nghĩa &#x27;cao&#x27;?&quot;,opts:[&quot;to&quot;,&quot;thấp&quot;,&quot;lớn&quot;,&quot;dài&quot;],ans:1},{q:&quot;Trái nghĩa &#x27;siêng năng&#x27;?&quot;,opts:[&quot;chăm chỉ&quot;,&quot;cần cù&quot;,&quot;lười biếng&quot;,&quot;giỏi&quot;],ans:2},{q:&quot;&#x27;Hòa bình&#x27; trái nghĩa?&quot;,opts:[&quot;yên ổn&quot;,&quot;chiến tranh&quot;,&quot;vui vẻ&quot;,&quot;hạnh phúc&quot;],ans:1},{q:&quot;Trái nghĩa &#x27;khiêm tốn&#x27;?&quot;,opts:[&quot;nhún nhường&quot;,&quot;lịch sự&quot;,&quot;kiêu căng&quot;,&quot;hiền&quot;],ans:2},{q:&quot;&#x27;Tiết kiệm&#x27; trái nghĩa?&quot;,opts:[&quot;dè sẻn&quot;,&quot;lãng phí&quot;,&quot;chắt chiu&quot;,&quot;cẩn thận&quot;],ans:1},{q:&quot;Trái nghĩa &#x27;đoàn kết&#x27;?&quot;,opts:[&quot;gắn bó&quot;,&quot;chia rẽ&quot;,&quot;yêu thương&quot;,&quot;giúp đỡ&quot;],ans:1},{q:&quot;&#x27;Trung thực&#x27; trái nghĩa?&quot;,opts:[&quot;thật thà&quot;,&quot;gian dối&quot;,&quot;ngay thẳng&quot;,&quot;chân thật&quot;],ans:1},{q:&quot;Trái nghĩa &#x27;lạc quan&#x27;?&quot;,opts:[&quot;vui tươi&quot;,&quot;bi quan&quot;,&quot;phấn khởi&quot;,&quot;hồ hởi&quot;],ans:1},{q:&quot;&#x27;Cẩn thận&#x27; trái nghĩa?&quot;,opts:[&quot;tỉ mỉ&quot;,&quot;chu đáo&quot;,&quot;cẩu thả&quot;,&quot;kỹ lưỡng&quot;],ans:2},{q:&quot;Trái nghĩa &#x27;phức tạp&#x27;?&quot;,opts:[&quot;rắc rối&quot;,&quot;đơn giản&quot;,&quot;khó khăn&quot;,&quot;phiền phức&quot;],ans:1}],&quot;tv_chinhtả&quot;:[{q:&quot;Viết đúng:&quot;,opts:[&quot;lồi cơm&quot;,&quot;nồi cơm&quot;,&quot;lồi com&quot;,&quot;nồi com&quot;],ans:1},{q:&quot;Viết đúng:&quot;,opts:[&quot;ná cờ&quot;,&quot;lá cờ&quot;,&quot;la cờ&quot;,&quot;na cờ&quot;],ans:1},{q:&quot;Viết đúng:&quot;,opts:[&quot;suân sang&quot;,&quot;xuân xang&quot;,&quot;xuân sang&quot;,&quot;suân xang&quot;],ans:2},{q:&quot;Sáng hay xáng sớm?&quot;,opts:[&quot;sáng sớm&quot;,&quot;xáng xớm&quot;,&quot;xáng sớm&quot;,&quot;sáng xớm&quot;],ans:0},{q:&quot;Viết đúng:&quot;,opts:[&quot;chăng chòn&quot;,&quot;trăng tròn&quot;,&quot;chăng tròn&quot;,&quot;trăng chòn&quot;],ans:1},{q:&quot;Viết đúng:&quot;,opts:[&quot;trăm trỉ&quot;,&quot;chăm chỉ&quot;,&quot;chăm trỉ&quot;,&quot;trăm chỉ&quot;],ans:1},{q:&quot;Viết đúng:&quot;,opts:[&quot;lung linh&quot;,&quot;nung ninh&quot;,&quot;lung ninh&quot;,&quot;nung linh&quot;],ans:0},{q:&quot;Viết đúng:&quot;,opts:[&quot;sinh sắn&quot;,&quot;xinh xắn&quot;,&quot;xinh sắn&quot;,&quot;sinh xắn&quot;],ans:1},{q:&quot;Viết đúng:&quot;,opts:[&quot;xông xâu&quot;,&quot;sông sâu&quot;,&quot;xông sâu&quot;,&quot;sông xâu&quot;],ans:1},{q:&quot;Viết đúng:&quot;,opts:[&quot;lô lức&quot;,&quot;nô nức&quot;,&quot;nô lức&quot;,&quot;lô nức&quot;],ans:1}],tv_cauGhep:[{q:&quot;&#x27;Trời mưa ___ em vẫn đi học&#x27;&quot;,opts:[&quot;vì vậy&quot;,&quot;ngoài ra&quot;,&quot;nhưng&quot;,&quot;hơn nữa&quot;],ans:2},{q:&quot;&#x27;___ chăm chỉ ___ điểm cao&#x27;&quot;,opts:[&quot;Tuy...nhưng&quot;,&quot;Vì...nên&quot;,&quot;Mặc dù...nhưng&quot;,&quot;Không chỉ...mà còn&quot;],ans:1},{q:&quot;&#x27;Lan ___ giỏi toán ___ giỏi văn&#x27;&quot;,opts:[&quot;vì...nên&quot;,&quot;tuy...nhưng&quot;,&quot;không chỉ...mà còn&quot;,&quot;nếu...thì&quot;],ans:2},{q:&quot;&#x27;___ cố gắng ___ thành công&#x27;&quot;,opts:[&quot;Vì...nên&quot;,&quot;Nếu...thì&quot;,&quot;Tuy...nhưng&quot;,&quot;Mặc dù...nhưng&quot;],ans:1},{q:&quot;Đâu là câu ghép?&quot;,opts:[&quot;Trời mưa to.&quot;,&quot;Em chăm chỉ.&quot;,&quot;Trời mưa nhưng em đi học.&quot;,&quot;Hoa nở đẹp.&quot;],ans:2},{q:&quot;&#x27;Mặc dù khó ___ anh vẫn cố&#x27;&quot;,opts:[&quot;vì vậy&quot;,&quot;nhưng&quot;,&quot;nên&quot;,&quot;ngoài ra&quot;],ans:1},{q:&quot;&#x27;Sở dĩ điểm cao ___ em chăm&#x27;&quot;,opts:[&quot;nhưng&quot;,&quot;là vì&quot;,&quot;ngoài ra&quot;,&quot;hơn nữa&quot;],ans:1},{q:&quot;&#x27;Nhờ luyện tập ___ bạn tiến bộ&#x27;&quot;,opts:[&quot;nhưng&quot;,&quot;tuy nhiên&quot;,&quot;mà&quot;,&quot;vì vậy&quot;],ans:2},{q:&quot;QHT tương phản?&quot;,opts:[&quot;Vì...nên&quot;,&quot;Nếu...thì&quot;,&quot;Tuy...nhưng&quot;,&quot;Nhờ...mà&quot;],ans:2},{q:&quot;&#x27;Càng học ___ càng giỏi&#x27;&quot;,opts:[&quot;thì&quot;,&quot;nhưng&quot;,&quot;vì vậy&quot;,&quot;ngoài ra&quot;],ans:0}]};
 
 // === SOUND ENGINE ===
-var _aC,_sOn=true;
-function _iA(){if(!_aC)_aC=new(window.AudioContext||window.webkitAudioContext)()}
-function _pT(f,d,t,v){if(!_sOn)return;_iA();var o=_aC.createOscillator(),g=_aC.createGain();o.type=t||&#x27;sine&#x27;;o.frequency.value=f;g.gain.value=v||.15;g.gain.exponentialRampToValueAtTime(.001,_aC.currentTime+d);o.connect(g);g.connect(_aC.destination);o.start();o.stop(_aC.currentTime+d)}
-function sndOk(){_pT(523,.08,&#x27;sine&#x27;,.22);setTimeout(function(){_pT(659,.08,&#x27;sine&#x27;,.22),80);setTimeout(function(){_pT(784,.15,&#x27;sine&#x27;,.22),160)}
-function sndNo(){_pT(200,.25,&#x27;sawtooth&#x27;,.12)}
-function sndTick(){_pT(1000,.04,&#x27;sine&#x27;,.08)}
-function sndUrgent(){_pT(880,.06,&#x27;square&#x27;,.1);setTimeout(function(){_pT(880,.06,&#x27;square&#x27;,.1),120)}
-function sndStart(){_pT(440,.1,&#x27;sine&#x27;,.15);setTimeout(function(){_pT(554,.1,&#x27;sine&#x27;,.15),100);setTimeout(function(){_pT(659,.15,&#x27;sine&#x27;,.15),200)}
+var audioCtx,soundOn=true;
+function initAudio(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)()}
+function playTone(f,d,t,v){if(!soundOn)return;initAudio();var o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type=t||&#x27;sine&#x27;;o.frequency.value=f;g.gain.value=v||.15;g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+d);o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+d)}
+function sndOk(){playTone(523,.08,&#x27;sine&#x27;,.22);setTimeout(function(){playTone(659,.08,&#x27;sine&#x27;,.22)},80);setTimeout(function(){playTone(784,.15,&#x27;sine&#x27;,.22)},160)}
+function sndNo(){playTone(200,.25,&#x27;sawtooth&#x27;,.12)}
+function sndUrgent(){playTone(880,.06,&#x27;square&#x27;,.1);setTimeout(function(){playTone(880,.06,&#x27;square&#x27;,.1)},120)}
+function sndWin(){var notes=[523,587,659,784,1047];for(var i=0;i&lt;notes.length;i++){(function(n,delay){setTimeout(function(){playTone(n,.18,&#x27;sine&#x27;,.2)},delay)})(notes[i],i*100)}}
+function sndTick(){playTone(1000,.04,&#x27;sine&#x27;,.08)}
+function sndStart(){_pT(440,.1,&#x27;sine&#x27;,.15);setTimeout(function(){_pT(554,.1,&#x27;sine&#x27;,.15},100);setTimeout(function(){_pT(659,.15,&#x27;sine&#x27;,.15},200)}
 function sndWin(){[523,587,659,784,1047].forEach(function(f,i) setTimeout(function(){_pT(f,.18,&#x27;sine&#x27;,.2),i*100))}
 
 var config={},state={};
@@ -657,7 +658,7 @@ if(!state.teamPools){
 }
 var ti=state.currentTeam;
 if(state.teamQIdx[ti]&gt;=state.teamPools[ti].length){state.teamPools[ti]=shuffle([...config.questions]);state.teamQIdx[ti]=0}
-state.answered=false;var q=state.teamPools[ti][state.teamQIdx[ti]];state.qIdx++;document.getElementById(&#x27;qNumber&#x27;).textContent=&#x27;Câu &#x27;+(state.qIdx+1);var te=document.getElementById(&#x27;qTeam&#x27;);te.textContent=&#x27;🎯 &#x27;+config.teams[state.currentTeam];te.style.background=TC[state.currentTeam];document.getElementById(&#x27;qText&#x27;).textContent=q.q;document.getElementById(&#x27;feedback&#x27;).textContent=&#x27;&#x27;;document.getElementById(&#x27;feedback&#x27;).className=&#x27;feedback&#x27;;document.getElementById(&#x27;btnNext&#x27;).classList.add(&#x27;hidden&#x27;);document.getElementById(&#x27;qCard&#x27;).className=&#x27;q-card&#x27;;var g=document.getElementById(&#x27;optionsGrid&#x27;);var lb=[&#x27;A&#x27;,&#x27;B&#x27;,&#x27;C&#x27;,&#x27;D&#x27;];g.innerHTML=q.opts.map(function(o,i) &#x27;&lt;div class=&quot;option-btn&quot; onclick=&quot;selectOption(&#x27;+(i)+&#x27;)&quot; id=&quot;opt&#x27;+(i)+&#x27;&quot;&gt;&#x27;+(lb[i])+&#x27;. &#x27;+(o)+&#x27;&lt;/div&gt;&#x27;).join(&#x27;&#x27;)}
+state.answered=false;var q=state.teamPools[ti][state.teamQIdx[ti]];state.qIdx++;document.getElementById(&#x27;qNumber&#x27;).textContent=&#x27;Câu &#x27;+(state.qIdx+1);var te=document.getElementById(&#x27;qTeam&#x27;);te.textContent=&#x27;🎯 &#x27;+config.teams[state.currentTeam];te.style.background=TC[state.currentTeam];document.getElementById(&#x27;qText&#x27;).textContent=q.q;document.getElementById(&#x27;feedback&#x27;).textContent=&#x27;&#x27;;document.getElementById(&#x27;feedback&#x27;).className=&#x27;feedback&#x27;;document.getElementById(&#x27;btnNext&#x27;).classList.add(&#x27;hidden&#x27;);document.getElementById(&#x27;qCard&#x27;).className=&#x27;q-card&#x27;;var g=document.getElementById(&#x27;optionsGrid&#x27;);var lb=[&#x27;A&#x27;,&#x27;B&#x27;,&#x27;C&#x27;,&#x27;D&#x27;];g.innerHTML=q.opts.map(function(o,i){return &#x27;&lt;div class=&quot;option-btn&quot; onclick=&quot;selectOption(&#x27;+(i)+&#x27;)&quot; id=&quot;opt&#x27;+(i)+&#x27;&quot;&gt;&#x27;+(lb[i])+&#x27;. &#x27;+(o)+&#x27;&lt;/div&gt;&#x27;}).join(&#x27;&#x27;)}
 function selectOption(idx){if(state.answered)return;state.answered=true;var q=state.questionPool[state.qIdx];var ok=idx===q.ans;var card=document.getElementById(&#x27;qCard&#x27;),fb=document.getElementById(&#x27;feedback&#x27;);document.getElementById(&#x27;opt&#x27;+idx).classList.add(ok?&#x27;correct&#x27;:&#x27;wrong&#x27;);document.getElementById(&#x27;opt&#x27;+q.ans).classList.add(&#x27;correct&#x27;);if(ok){state.scores[state.currentTeam]++;card.classList.add(&#x27;flash-correct&#x27;);fb.className=&#x27;feedback correct&#x27;;sndOk();fb.textContent=&#x27;🎉 &#x27;+config.teams[state.currentTeam]+&#x27; trả lời đúng! Tiến 1 bước!&#x27;;renderTrack();if(state.scores[state.currentTeam]&gt;=config.stepsToWin){state.winner=state.currentTeam;fb.textContent+=&#x27; 🏆 VỀ ĐÍCH!&#x27;}}else{card.classList.add(&#x27;flash-wrong&#x27;);fb.className=&#x27;feedback wrong&#x27;;sndNo();fb.textContent=&#x27;❌ Sai! Đáp án: &#x27;+[&#x27;A&#x27;,&#x27;B&#x27;,&#x27;C&#x27;,&#x27;D&#x27;][q.ans]}setTimeout(function(){card.className=&#x27;q-card&#x27;,800);document.getElementById(&#x27;btnNext&#x27;).classList.remove(&#x27;hidden&#x27;)}
 function nextQuestion(){if(state.winner){showResults();return}state.teamQIdx[state.currentTeam]++;state.currentTeam=(state.currentTeam+1)%config.teamCount;showQuestion()}
 function showResults(){document.getElementById(&#x27;gameScreen&#x27;).classList.add(&#x27;hidden&#x27;);document.getElementById(&#x27;resultScreen&#x27;).classList.remove(&#x27;hidden&#x27;);var rk=state.scores.map(function(s,i) ({name:config.teams[i],score:s,color:TC[i]}));rk.sort(function(a,b) b.score-a.score);sndWin();document.getElementById(&#x27;winnerAnnounce&#x27;).textContent=&#x27;🎊 &#x27;+rk[0].name+&#x27; chiến thắng! 🎊&#x27;;var p=document.getElementById(&#x27;podium&#x27;);var md=[&#x27;🥇&#x27;,&#x27;🥈&#x27;,&#x27;🥉&#x27;,&#x27;4️⃣&#x27;];var dc=[&#x27;podium-1&#x27;,&#x27;podium-2&#x27;,&#x27;podium-3&#x27;];var disp=rk.length&gt;=3?[rk[1],rk[0],rk[2],...rk.slice(3)]:rk;var dcs=rk.length&gt;=3?[&#x27;podium-2&#x27;,&#x27;podium-1&#x27;,&#x27;podium-3&#x27;]:dc;p.innerHTML=disp.slice(0,Math.min(3,disp.length)).map(function(t,i) {var ri=rk.indexOf(t);return&#x27;&lt;div class=&quot;podium-place &#x27;+(dcs[i]||&#x27;podium-3&#x27;)+&#x27;&quot;&gt;&lt;div class=&quot;podium-medal&quot;&gt;&#x27;+(md[ri])+&#x27;&lt;/div&gt;&lt;div class=&quot;podium-score&quot;&gt;&#x27;+(t.score)+&#x27;/&#x27;+(config.stepsToWin)+&#x27;&lt;/div&gt;&lt;div class=&quot;podium-name&quot; style=&quot;color:&#x27;+(t.color)+&#x27;&quot;&gt;&#x27;+(t.name)+&#x27;&lt;/div&gt;&lt;/div&gt;&#x27;}).join(&#x27;&#x27;)}
@@ -962,12 +963,12 @@ var cfg={}, st={}, wheelAngle=0, spinning=false;
 var audioCtx,soundOn=true;
 function initAudio(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)()}
 function playTone(f,d,t,v){if(!soundOn)return;initAudio();var o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type=t||&#x27;sine&#x27;;o.frequency.value=f;g.gain.value=v||.15;g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+d);o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+d)}
-function sndOk(){playTone(523,.08,&#x27;sine&#x27;,.2);setTimeout(function(){playTone(659,.08,&#x27;sine&#x27;,.2),80);setTimeout(function(){playTone(784,.15,&#x27;sine&#x27;,.2),160)}
-function sndUrgent(){playTone(880,.06,&#x27;square&#x27;,.1);setTimeout(function(){playTone(880,.06,&#x27;square&#x27;,.1),120)}
-function sndNo(){playTone(200,.25,&#x27;sawtooth&#x27;,.1)}
-function sndSpin(){for(var i=0;i&lt;8;i++)setTimeout(function(){playTone(400+i*50,.06,&#x27;sine&#x27;,.08),i*60)}
-function sndWin(){[523,587,659,784].forEach(function(f,i) setTimeout(function(){playTone(f,.15,&#x27;sine&#x27;,.18),i*120))}
-
+function sndOk(){playTone(523,.08,&#x27;sine&#x27;,.22);setTimeout(function(){playTone(659,.08,&#x27;sine&#x27;,.22)},80);setTimeout(function(){playTone(784,.15,&#x27;sine&#x27;,.22)},160)}
+function sndNo(){playTone(200,.25,&#x27;sawtooth&#x27;,.12)}
+function sndUrgent(){playTone(880,.06,&#x27;square&#x27;,.1);setTimeout(function(){playTone(880,.06,&#x27;square&#x27;,.1)},120)}
+function sndWin(){var notes=[523,587,659,784,1047];for(var i=0;i&lt;notes.length;i++){(function(n,delay){setTimeout(function(){playTone(n,.18,&#x27;sine&#x27;,.2)},delay)})(notes[i],i*100)}}
+function sndTick(){playTone(1000,.04,&#x27;sine&#x27;,.08)}
+function sndSpin(){for(var i=0;i&lt;8;i++){(function(n){setTimeout(function(){playTone(400+n*50,.06,&#x27;sine&#x27;,.08)},n*60)})(i)}}
 function startGame(){
   var lid = document.getElementById(&#x27;lesson&#x27;).value;
   var lname = document.getElementById(&#x27;lesson&#x27;).selectedOptions[0].text;
@@ -1048,7 +1049,7 @@ function showQuestion(){
   var od = document.getElementById(&#x27;optsDiv&#x27;);
   od.classList.remove(&#x27;hidden&#x27;);
   var labels = [&#x27;A&#x27;,&#x27;B&#x27;,&#x27;C&#x27;,&#x27;D&#x27;];
-  od.innerHTML = q.o.map(function(o,i) &#x27;&lt;div class=&quot;opt&quot; onclick=&quot;answer(&#x27;+(i)+&#x27;)&quot; id=&quot;o&#x27;+(i)+&#x27;&quot;&gt;&#x27;+(labels[i])+&#x27;. &#x27;+(o)+&#x27;&lt;/div&gt;&#x27;).join(&#x27;&#x27;);
+  od.innerHTML = q.o.map(function(o,i){return &#x27;&lt;div class=&quot;opt&quot; onclick=&quot;answer(&#x27;+(i)+&#x27;)&quot; id=&quot;o&#x27;+(i)+&#x27;&quot;&gt;&#x27;+(labels[i])+&#x27;. &#x27;+(o)+&#x27;&lt;/div&gt;&#x27;}).join(&#x27;&#x27;);
 }
 
 function answer(idx){
@@ -1356,13 +1357,11 @@ t35:[
 var audioCtx,soundOn=true;
 function initAudio(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)()}
 function playTone(f,d,t,v){if(!soundOn)return;initAudio();var o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type=t||&#x27;sine&#x27;;o.frequency.value=f;g.gain.value=v||.15;g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+d);o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+d)}
-function sndOk(){playTone(523,.08,&#x27;sine&#x27;,.2);setTimeout(function(){playTone(659,.08,&#x27;sine&#x27;,.2),80);setTimeout(function(){playTone(784,.15,&#x27;sine&#x27;,.2),160)}
-function sndUrgent(){playTone(880,.06,&#x27;square&#x27;,.1);setTimeout(function(){playTone(880,.06,&#x27;square&#x27;,.1),120)}
-function sndNo(){playTone(200,.25,&#x27;sawtooth&#x27;,.1)}
-function sndTick(){playTone(1000,.03,&#x27;sine&#x27;,.05)}
-function sndWin(){[523,587,659,784].forEach(function(f,i) setTimeout(function(){playTone(f,.15,&#x27;sine&#x27;,.18),i*120))}
-
-var cfg={},st={},timerInt;
+function sndOk(){playTone(523,.08,&#x27;sine&#x27;,.22);setTimeout(function(){playTone(659,.08,&#x27;sine&#x27;,.22)},80);setTimeout(function(){playTone(784,.15,&#x27;sine&#x27;,.22)},160)}
+function sndNo(){playTone(200,.25,&#x27;sawtooth&#x27;,.12)}
+function sndUrgent(){playTone(880,.06,&#x27;square&#x27;,.1);setTimeout(function(){playTone(880,.06,&#x27;square&#x27;,.1)},120)}
+function sndWin(){var notes=[523,587,659,784,1047];for(var i=0;i&lt;notes.length;i++){(function(n,delay){setTimeout(function(){playTone(n,.18,&#x27;sine&#x27;,.2)},delay)})(notes[i],i*100)}}
+function sndTick(){playTone(1000,.04,&#x27;sine&#x27;,.08)}
 function startGame(){
   var lid=document.getElementById(&#x27;lesson&#x27;).value;
   var lname=document.getElementById(&#x27;lesson&#x27;).selectedOptions[0].text;
@@ -1395,7 +1394,7 @@ function showQ(){
   if(q.ctx){ctx.textContent=q.ctx;ctx.classList.remove(&#x27;hidden&#x27;)}else ctx.classList.add(&#x27;hidden&#x27;);
   var od=document.getElementById(&#x27;optsDiv&#x27;);
   var lb=[&#x27;A&#x27;,&#x27;B&#x27;,&#x27;C&#x27;,&#x27;D&#x27;];
-  od.innerHTML=q.o.map(function(o,i) &#x27;&lt;div class=&quot;opt&quot; onclick=&quot;ans(&#x27;+(i)+&#x27;)&quot; id=&quot;o&#x27;+(i)+&#x27;&quot;&gt;&#x27;+(lb[i])+&#x27;. &#x27;+(o)+&#x27;&lt;/div&gt;&#x27;).join(&#x27;&#x27;);
+  od.innerHTML=q.o.map(function(o,i){return &#x27;&lt;div class=&quot;opt&quot; onclick=&quot;ans(&#x27;+(i)+&#x27;)&quot; id=&quot;o&#x27;+(i)+&#x27;&quot;&gt;&#x27;+(lb[i])+&#x27;. &#x27;+(o)+&#x27;&lt;/div&gt;&#x27;}).join(&#x27;&#x27;);
   startTimer();
 }
 
@@ -1607,69 +1606,11 @@ h1{font-size:clamp(1.5em,5vw,2em)}
 var audioCtx,soundOn=true;
 function initAudio(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)()}
 function playTone(f,d,t,v){if(!soundOn)return;initAudio();var o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type=t||&#x27;sine&#x27;;o.frequency.value=f;g.gain.value=v||.15;g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+d);o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+d)}
-function sndOk(){playTone(523,.08,&#x27;sine&#x27;,.2);setTimeout(function(){playTone(659,.08,&#x27;sine&#x27;,.2),80);setTimeout(function(){playTone(784,.15,&#x27;sine&#x27;,.2),160)}
-function sndUrgent(){playTone(880,.06,&#x27;square&#x27;,.1);setTimeout(function(){playTone(880,.06,&#x27;square&#x27;,.1),120)}
-function sndNo(){playTone(200,.25,&#x27;sawtooth&#x27;,.1)}
-function sndTick(){playTone(1000,.03,&#x27;sine&#x27;,.05)}
-function sndWin(){[523,587,659,784].forEach(function(f,i) setTimeout(function(){playTone(f,.15,&#x27;sine&#x27;,.18),i*120))}
-function toggleSound(){soundOn=!soundOn;document.getElementById(&#x27;volBtn&#x27;).textContent=soundOn?&#x27;🔊&#x27;:&#x27;🔇&#x27;}
-
-var Q={
-cd16a:[
-  {q:&quot;Liên kết câu bằng cách lặp từ ngữ là gì?&quot;,o:[&quot;Dùng từ mới&quot;,&quot;Lặp lại từ đã dùng ở câu trước&quot;,&quot;Bỏ từ&quot;,&quot;Thêm dấu&quot;],a:1,t:&quot;Phép lặp&quot;,ex:&quot;Lặp từ ngữ: dùng lại từ đã có ở câu trước để tạo liên kết.&quot;},
-  {q:&quot;&#x27;Hà Nội rất đẹp. Hà Nội là thủ đô.&#x27; – Phép gì?&quot;,o:[&quot;Phép thế&quot;,&quot;Phép lặp&quot;,&quot;Phép nối&quot;,&quot;Không liên kết&quot;],a:1,t:&quot;Nhận biết&quot;},
-  {q:&quot;Phép lặp từ ngữ giúp đoạn văn thế nào?&quot;,o:[&quot;Dài hơn&quot;,&quot;Liên kết chặt, nhấn mạnh ý&quot;,&quot;Khó hiểu&quot;,&quot;Ngắn hơn&quot;],a:1,t:&quot;Tác dụng&quot;},
-  {q:&quot;&#x27;Biển rất rộng. Biển xanh ngắt.&#x27; – Từ lặp là?&quot;,o:[&quot;rộng&quot;,&quot;xanh&quot;,&quot;Biển&quot;,&quot;ngắt&quot;],a:2,t:&quot;Xác định&quot;},
-  {q:&quot;Lặp từ quá nhiều sẽ thế nào?&quot;,o:[&quot;Hay hơn&quot;,&quot;Nhàm chán&quot;,&quot;Ngắn hơn&quot;,&quot;Dễ hiểu&quot;],a:1,t:&quot;Lưu ý&quot;},
-  {q:&quot;Chọn câu dùng phép lặp:&quot;,o:[&quot;Trời mưa. Tuy nhiên em đi.&quot;,&quot;Cây xanh tốt. Cây cho bóng mát.&quot;,&quot;Em học. Bạn chơi.&quot;,&quot;Hoa đẹp. Trời nắng.&quot;],a:1,t:&quot;Thực hành&quot;},
-  {q:&quot;Phép lặp khác phép thế thế nào?&quot;,o:[&quot;Lặp dùng lại từ, thế dùng từ khác&quot;,&quot;Giống nhau&quot;,&quot;Lặp ngắn hơn&quot;,&quot;Thế dài hơn&quot;],a:0,t:&quot;So sánh&quot;},
-  {q:&quot;&#x27;Quê hương rất đẹp. Quê hương có dòng sông.&#x27; – Từ lặp?&quot;,o:[&quot;đẹp&quot;,&quot;dòng sông&quot;,&quot;Quê hương&quot;,&quot;có&quot;],a:2,t:&quot;Xác định&quot;}
-],
-cd17a:[
-  {q:&quot;Phép thế là gì?&quot;,o:[&quot;Lặp lại từ&quot;,&quot;Dùng từ khác thay thế từ đã nói&quot;,&quot;Bỏ từ&quot;,&quot;Thêm câu&quot;],a:1,t:&quot;Phép thế&quot;},
-  {q:&quot;&#x27;Lan chăm chỉ. Bạn ấy đạt điểm cao.&#x27; – &#x27;Bạn ấy&#x27; thay cho?&quot;,o:[&quot;Cô giáo&quot;,&quot;Lan&quot;,&quot;Điểm&quot;,&quot;Chăm&quot;],a:1,t:&quot;Nhận biết&quot;},
-  {q:&quot;Phép thế dùng từ nào để thay?&quot;,o:[&quot;Từ trái nghĩa&quot;,&quot;Đại từ, từ đồng nghĩa&quot;,&quot;Từ mới hoàn toàn&quot;,&quot;Số&quot;],a:1,t:&quot;Kiến thức&quot;},
-  {q:&quot;&#x27;Hà Nội đẹp. Thủ đô nhộn nhịp.&#x27; – Phép gì?&quot;,o:[&quot;Lặp&quot;,&quot;Thế&quot;,&quot;Nối&quot;,&quot;Không&quot;],a:1,t:&quot;Nhận biết&quot;},
-  {q:&quot;Tác dụng phép thế?&quot;,o:[&quot;Dài hơn&quot;,&quot;Tránh lặp, phong phú hơn&quot;,&quot;Khó hiểu&quot;,&quot;Không tác dụng&quot;],a:1,t:&quot;Tác dụng&quot;},
-  {q:&quot;&#x27;Mèo nằm sưởi nắng. Nó lim dim mắt.&#x27; – &#x27;Nó&#x27; thay cho?&quot;,o:[&quot;Nắng&quot;,&quot;Mắt&quot;,&quot;Con mèo&quot;,&quot;Sưởi&quot;],a:2,t:&quot;Xác định&quot;},
-  {q:&quot;Từ nào thay thế &#x27;Bác Hồ&#x27;?&quot;,o:[&quot;Ông ấy&quot;,&quot;Người&quot;,&quot;Bác&quot;,&quot;Tất cả được&quot;],a:3,t:&quot;Vận dụng&quot;},
-  {q:&quot;&#x27;Cây bàng đẹp. Loài cây này cho mát.&#x27; – &#x27;Loài cây này&#x27; thay?&quot;,o:[&quot;Mát&quot;,&quot;Cây bàng&quot;,&quot;Đẹp&quot;,&quot;Cho&quot;],a:1,t:&quot;Xác định&quot;}
-],
-cd18a:[
-  {q:&quot;Phép nối dùng từ gì?&quot;,o:[&quot;Danh từ&quot;,&quot;QHT, từ nối: vì vậy, tuy nhiên...&quot;,&quot;Động từ&quot;,&quot;Tính từ&quot;],a:1,t:&quot;Phép nối&quot;},
-  {q:&quot;&#x27;Trời mưa. Vì vậy đường trơn.&#x27; – Từ nối?&quot;,o:[&quot;Trời&quot;,&quot;mưa&quot;,&quot;Vì vậy&quot;,&quot;đường&quot;],a:2,t:&quot;Nhận biết&quot;},
-  {q:&quot;&#x27;Tuy nhiên&#x27; dùng khi quan hệ gì?&quot;,o:[&quot;Bổ sung&quot;,&quot;Nguyên nhân&quot;,&quot;Tương phản&quot;,&quot;Điều kiện&quot;],a:2,t:&quot;Quan hệ&quot;},
-  {q:&quot;&#x27;Ngoài ra&#x27; dùng để?&quot;,o:[&quot;Phản bác&quot;,&quot;Bổ sung thêm ý&quot;,&quot;Kết thúc&quot;,&quot;Hỏi&quot;],a:1,t:&quot;Quan hệ&quot;},
-  {q:&quot;Điền từ: &#x27;Em chăm học. ___ em điểm cao.&#x27;&quot;,o:[&quot;Tuy nhiên&quot;,&quot;Vì vậy&quot;,&quot;Mặt khác&quot;,&quot;Ngoài ra&quot;],a:1,t:&quot;Điền từ&quot;},
-  {q:&quot;&#x27;Mặt khác&#x27; dùng để?&quot;,o:[&quot;Nguyên nhân&quot;,&quot;Nêu thêm khía cạnh khác&quot;,&quot;Kết luận&quot;,&quot;Phản bác&quot;],a:1,t:&quot;Quan hệ&quot;},
-  {q:&quot;&#x27;Do đó&#x27; giống từ nào?&quot;,o:[&quot;Tuy nhiên&quot;,&quot;Vì vậy&quot;,&quot;Ngoài ra&quot;,&quot;Mặt khác&quot;],a:1,t:&quot;Đồng nghĩa&quot;},
-  {q:&quot;Phép nối khác phép lặp, thế ở chỗ?&quot;,o:[&quot;Dùng từ nối liên kết 2 câu&quot;,&quot;Giống nhau&quot;,&quot;Ngắn hơn&quot;,&quot;Dài hơn&quot;],a:0,t:&quot;So sánh&quot;}
-],
-cd18b:[
-  {q:&quot;Kể chuyện sáng tạo cần gì?&quot;,o:[&quot;Chép nguyên bản&quot;,&quot;Dựa vào truyện gốc, thêm sáng tạo&quot;,&quot;Bịa hoàn toàn&quot;,&quot;Chỉ tóm tắt&quot;],a:1,t:&quot;Yêu cầu&quot;},
-  {q:&quot;Khi kể sáng tạo, có thể thay đổi gì?&quot;,o:[&quot;Không được đổi&quot;,&quot;Ngôi kể, chi tiết, kết thúc&quot;,&quot;Tên tác giả&quot;,&quot;Tất cả nội dung&quot;],a:1,t:&quot;Sáng tạo&quot;},
-  {q:&quot;Kể chuyện theo ngôi thứ nhất nghĩa là?&quot;,o:[&quot;Dùng &#x27;nó&#x27;&quot;,&quot;Dùng &#x27;tôi, em, mình&#x27;&quot;,&quot;Dùng &#x27;họ&#x27;&quot;,&quot;Không xưng hô&quot;],a:1,t:&quot;Ngôi kể&quot;},
-  {q:&quot;Khi kể sáng tạo, cần giữ lại gì?&quot;,o:[&quot;Không giữ gì&quot;,&quot;Ý chính, bài học của truyện gốc&quot;,&quot;Chỉ tên&quot;,&quot;Chỉ kết thúc&quot;],a:1,t:&quot;Nguyên tắc&quot;},
-  {q:&quot;Kể chuyện hấp dẫn cần?&quot;,o:[&quot;Đọc đều đều&quot;,&quot;Giọng kể truyền cảm, cử chỉ&quot;,&quot;Nói nhỏ&quot;,&quot;Quay lưng&quot;],a:1,t:&quot;Kĩ năng&quot;},
-  {q:&quot;Có thể thêm lời thoại khi kể sáng tạo không?&quot;,o:[&quot;Không bao giờ&quot;,&quot;Có, để câu chuyện sinh động&quot;,&quot;Chỉ khi GV cho phép&quot;,&quot;Phải xin phép&quot;],a:1,t:&quot;Sáng tạo&quot;},
-  {q:&quot;Kể chuyện sáng tạo giúp phát triển năng lực gì?&quot;,o:[&quot;Chỉ đọc&quot;,&quot;Tưởng tượng, diễn đạt, sáng tạo&quot;,&quot;Chỉ viết&quot;,&quot;Chỉ nghe&quot;],a:1,t:&quot;Mục tiêu&quot;},
-  {q:&quot;Phần kết thúc kể sáng tạo nên?&quot;,o:[&quot;Dừng đột ngột&quot;,&quot;Nêu bài học hoặc cảm nghĩ&quot;,&quot;Bỏ trống&quot;,&quot;Lặp lại mở đầu&quot;],a:1,t:&quot;Kết thúc&quot;}
-],
-cd19:[
-  {q:&quot;Phép lặp là?&quot;,o:[&quot;Dùng từ mới&quot;,&quot;Lặp lại từ đã dùng câu trước&quot;,&quot;Bỏ từ&quot;,&quot;Thêm dấu&quot;],a:1,t:&quot;Ôn tập&quot;},
-  {q:&quot;Phép thế là?&quot;,o:[&quot;Lặp từ&quot;,&quot;Dùng từ khác thay thế&quot;,&quot;Bỏ câu&quot;,&quot;Thêm câu&quot;],a:1,t:&quot;Ôn tập&quot;},
-  {q:&quot;Phép nối dùng gì?&quot;,o:[&quot;Danh từ&quot;,&quot;Từ nối, QHT&quot;,&quot;Động từ&quot;,&quot;Số&quot;],a:1,t:&quot;Ôn tập&quot;},
-  {q:&quot;&#x27;Vì vậy&#x27; thể hiện quan hệ gì?&quot;,o:[&quot;Tương phản&quot;,&quot;Nguyên nhân–kết quả&quot;,&quot;Bổ sung&quot;,&quot;Điều kiện&quot;],a:1,t:&quot;Ôn tập&quot;},
-  {q:&quot;&#x27;Tuy nhiên&#x27; thể hiện quan hệ gì?&quot;,o:[&quot;Bổ sung&quot;,&quot;Tương phản&quot;,&quot;Nguyên nhân&quot;,&quot;Điều kiện&quot;],a:1,t:&quot;Ôn tập&quot;},
-  {q:&quot;Báo cáo công việc cần gì?&quot;,o:[&quot;Chỉ tên&quot;,&quot;Thời gian, nội dung, kết quả&quot;,&quot;Chỉ kết quả&quot;,&quot;Viết thơ&quot;],a:1,t:&quot;Ôn tập&quot;},
-  {q:&quot;Chương trình hoạt động khác báo cáo ở chỗ?&quot;,o:[&quot;Giống nhau&quot;,&quot;CT là kế hoạch tương lai, BC là kết quả đã làm&quot;,&quot;CT ngắn hơn&quot;,&quot;BC dài hơn&quot;],a:1,t:&quot;Ôn tập&quot;},
-  {q:&quot;Kể chuyện sáng tạo cần giữ gì?&quot;,o:[&quot;Toàn bộ&quot;,&quot;Ý chính, bài học truyện gốc&quot;,&quot;Không giữ gì&quot;,&quot;Chỉ tên&quot;],a:1,t:&quot;Ôn tập&quot;},
-  {q:&quot;3 phép liên kết câu đã học là?&quot;,o:[&quot;Lặp, thế, nối&quot;,&quot;Lặp, bỏ, thêm&quot;,&quot;Nối, hỏi, đáp&quot;,&quot;Thế, xóa, viết&quot;],a:0,t:&quot;Ôn tập&quot;},
-  {q:&quot;&#x27;Em học giỏi. Bạn ấy rất chăm.&#x27; – &#x27;Bạn ấy&#x27; là phép gì?&quot;,o:[&quot;Lặp&quot;,&quot;Thế&quot;,&quot;Nối&quot;,&quot;Không liên kết&quot;],a:1,t:&quot;Ôn tập&quot;}
-]
-};
-
-var cfg={},st={},tmrI;
+function sndOk(){playTone(523,.08,&#x27;sine&#x27;,.22);setTimeout(function(){playTone(659,.08,&#x27;sine&#x27;,.22)},80);setTimeout(function(){playTone(784,.15,&#x27;sine&#x27;,.22)},160)}
+function sndNo(){playTone(200,.25,&#x27;sawtooth&#x27;,.12)}
+function sndUrgent(){playTone(880,.06,&#x27;square&#x27;,.1);setTimeout(function(){playTone(880,.06,&#x27;square&#x27;,.1)},120)}
+function sndWin(){var notes=[523,587,659,784,1047];for(var i=0;i&lt;notes.length;i++){(function(n,delay){setTimeout(function(){playTone(n,.18,&#x27;sine&#x27;,.2)},delay)})(notes[i],i*100)}}
+function sndTick(){playTone(1000,.04,&#x27;sine&#x27;,.08)}
 function startGame(){
   var lid=document.getElementById(&#x27;lesson&#x27;).value;
   var ln=document.getElementById(&#x27;lesson&#x27;).selectedOptions[0].text;
@@ -1682,7 +1623,7 @@ function startGame(){
   document.getElementById(&#x27;gameArea&#x27;).classList.remove(&#x27;hidden&#x27;);
   document.getElementById(&#x27;qT&#x27;).textContent=cfg.total;
   document.getElementById(&#x27;lTag&#x27;).textContent=ln.length&gt;30?ln.substring(0,28)+&#x27;...&#x27;:ln;
-  playTone(440,.1,&#x27;sine&#x27;,.15);setTimeout(function(){playTone(554,.1,&#x27;sine&#x27;,.15),100);setTimeout(function(){playTone(659,.15,&#x27;sine&#x27;,.15),200);
+  playTone(440,.1,&#x27;sine&#x27;,.15);setTimeout(function(){playTone(554,.1,&#x27;sine&#x27;,.15},100);setTimeout(function(){playTone(659,.15,&#x27;sine&#x27;,.15},200);
   showQ();
 }
 function showQ(){
@@ -1700,7 +1641,7 @@ function showQ(){
   document.getElementById(&#x27;pbar&#x27;).style.width=(st.qIdx/cfg.total*100)+&#x27;%&#x27;;
   var od=document.getElementById(&#x27;optsD&#x27;);
   var lb=[&#x27;A&#x27;,&#x27;B&#x27;,&#x27;C&#x27;,&#x27;D&#x27;];
-  od.innerHTML=q.o.map(function(o,i) &#x27;&lt;div class=&quot;opt&quot; onclick=&quot;ans(&#x27;+i+&#x27;)&quot; id=&quot;o&#x27;+i+&#x27;&quot;&gt;&#x27;+lb[i]+&#x27;. &#x27;+o+&#x27;&lt;/div&gt;&#x27;).join(&#x27;&#x27;);
+  od.innerHTML=q.o.map(function(o,i){return &#x27;&lt;div class=&quot;opt&quot; onclick=&quot;ans(&#x27;+i+&#x27;)&quot; id=&quot;o&#x27;+i+&#x27;&quot;&gt;&#x27;+lb[i]+&#x27;. &#x27;+o+&#x27;&lt;/div&gt;&#x27;}).join(&#x27;&#x27;);
   startTmr();
 }
 function ans(idx){
@@ -1895,89 +1836,11 @@ h1{font-size:clamp(1.5em,5vw,2em)}
 var audioCtx,soundOn=true;
 function initAudio(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)()}
 function playTone(f,d,t,v){if(!soundOn)return;initAudio();var o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type=t||&#x27;sine&#x27;;o.frequency.value=f;g.gain.value=v||.15;g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+d);o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+d)}
-function sndOk(){playTone(523,.08,&#x27;sine&#x27;,.22);setTimeout(function(){playTone(659,.08,&#x27;sine&#x27;,.22),80);setTimeout(function(){playTone(784,.15,&#x27;sine&#x27;,.22),160)}
+function sndOk(){playTone(523,.08,&#x27;sine&#x27;,.22);setTimeout(function(){playTone(659,.08,&#x27;sine&#x27;,.22)},80);setTimeout(function(){playTone(784,.15,&#x27;sine&#x27;,.22)},160)}
 function sndNo(){playTone(200,.25,&#x27;sawtooth&#x27;,.12)}
-function sndUrgent(){playTone(880,.06,&#x27;square&#x27;,.1);setTimeout(function(){playTone(880,.06,&#x27;square&#x27;,.1),120)}
-function sndWin(){[523,587,659,784,1047].forEach(function(f,i) setTimeout(function(){playTone(f,.18,&#x27;sine&#x27;,.2),i*100))}
-function toggleSound(){soundOn=!soundOn;document.getElementById(&#x27;volBtn&#x27;).textContent=soundOn?&#x27;🔊&#x27;:&#x27;🔇&#x27;}
-
-var Q={
-&quot;b22&quot;:[
-  {q:&quot;Cơ thể người được hình thành từ đâu?&quot;,o:[&quot;Từ đất&quot;,&quot;Từ trứng và tinh trùng&quot;,&quot;Từ nước&quot;,&quot;Từ không khí&quot;],a:1,t:&quot;Sinh sản&quot;},
-  {q:&quot;Em bé phát triển trong bụng mẹ bao lâu?&quot;,o:[&quot;3 tháng&quot;,&quot;6 tháng&quot;,&quot;9 tháng&quot;,&quot;12 tháng&quot;],a:2,t:&quot;Thai kỳ&quot;},
-  {q:&quot;Trứng được thụ tinh ở đâu?&quot;,o:[&quot;Dạ dày&quot;,&quot;Ống dẫn trứng&quot;,&quot;Tim&quot;,&quot;Phổi&quot;],a:1,t:&quot;Sinh sản&quot;},
-  {q:&quot;Ai cung cấp dinh dưỡng cho thai nhi?&quot;,o:[&quot;Bố&quot;,&quot;Ông bà&quot;,&quot;Mẹ qua nhau thai&quot;,&quot;Bác sĩ&quot;],a:2,t:&quot;Thai kỳ&quot;},
-  {q:&quot;Sau khi sinh, em bé cần gì nhất?&quot;,o:[&quot;Kẹo&quot;,&quot;Sữa mẹ&quot;,&quot;Nước ngọt&quot;,&quot;Cơm&quot;],a:1,t:&quot;Chăm sóc&quot;},
-  {q:&quot;Thai nhi được bảo vệ bởi gì trong bụng mẹ?&quot;,o:[&quot;Áo giáp&quot;,&quot;Nước ối&quot;,&quot;Không khí&quot;,&quot;Đất&quot;],a:1,t:&quot;Thai kỳ&quot;},
-  {q:&quot;Mẹ mang thai cần làm gì?&quot;,o:[&quot;Ăn uống đủ chất, khám thai&quot;,&quot;Nhịn ăn&quot;,&quot;Tập nặng&quot;,&quot;Thức khuya&quot;],a:0,t:&quot;Chăm sóc&quot;},
-  {q:&quot;Cơ quan nào tạo ra trứng?&quot;,o:[&quot;Dạ dày&quot;,&quot;Buồng trứng&quot;,&quot;Gan&quot;,&quot;Thận&quot;],a:1,t:&quot;Cơ thể&quot;},
-],
-&quot;b23&quot;:[
-  {q:&quot;Con người trải qua mấy giai đoạn phát triển chính?&quot;,o:[&quot;2&quot;,&quot;3&quot;,&quot;4&quot;,&quot;5&quot;],a:2,t:&quot;Phát triển&quot;,ex:&quot;4 giai đoạn: Sơ sinh, Thiếu nhi, Vị thành niên, Trưởng thành.&quot;},
-  {q:&quot;Giai đoạn vị thành niên bắt đầu khoảng mấy tuổi?&quot;,o:[&quot;5-6&quot;,&quot;8-9&quot;,&quot;10-15&quot;,&quot;20-25&quot;],a:2,t:&quot;Dậy thì&quot;},
-  {q:&quot;Tuổi dậy thì cơ thể thay đổi thế nào?&quot;,o:[&quot;Không đổi&quot;,&quot;Cao nhanh, thay đổi giọng nói, mọc lông&quot;,&quot;Nhỏ lại&quot;,&quot;Chỉ béo lên&quot;],a:1,t:&quot;Dậy thì&quot;},
-  {q:&quot;Giai đoạn sơ sinh kéo dài đến?&quot;,o:[&quot;1 tuổi&quot;,&quot;3 tuổi&quot;,&quot;6 tuổi&quot;,&quot;10 tuổi&quot;],a:0,t:&quot;Phát triển&quot;},
-  {q:&quot;Giai đoạn nào học sinh lớp 5 đang ở?&quot;,o:[&quot;Sơ sinh&quot;,&quot;Thiếu nhi&quot;,&quot;Trưởng thành&quot;,&quot;Già&quot;],a:1,t:&quot;Nhận biết&quot;},
-  {q:&quot;Người già thường có đặc điểm gì?&quot;,o:[&quot;Cao nhanh&quot;,&quot;Tóc bạc, da nhăn&quot;,&quot;Mọc răng sữa&quot;,&quot;Dậy thì&quot;],a:1,t:&quot;Phát triển&quot;},
-  {q:&quot;Ở mỗi giai đoạn, cơ thể cần gì?&quot;,o:[&quot;Chỉ ăn&quot;,&quot;Dinh dưỡng, vận động, nghỉ ngơi phù hợp&quot;,&quot;Chỉ ngủ&quot;,&quot;Không cần gì&quot;],a:1,t:&quot;Sức khỏe&quot;},
-  {q:&quot;Tuổi thiếu nhi là khoảng mấy tuổi?&quot;,o:[&quot;0-1&quot;,&quot;1-10&quot;,&quot;10-18&quot;,&quot;18-60&quot;],a:1,t:&quot;Phát triển&quot;},
-],
-&quot;b24&quot;:[
-  {q:&quot;Nam và nữ khác nhau chủ yếu ở điểm nào?&quot;,o:[&quot;Màu tóc&quot;,&quot;Cơ quan sinh dục&quot;,&quot;Chiều cao&quot;,&quot;Cân nặng&quot;],a:1,t:&quot;Giới tính&quot;},
-  {q:&quot;Nam và nữ có quyền bình đẳng không?&quot;,o:[&quot;Có, hoàn toàn bình đẳng&quot;,&quot;Không&quot;,&quot;Chỉ nam&quot;,&quot;Chỉ nữ&quot;],a:0,t:&quot;Bình đẳng&quot;},
-  {q:&quot;Ai cũng cần được tôn trọng, đúng không?&quot;,o:[&quot;Chỉ nam&quot;,&quot;Chỉ nữ&quot;,&quot;Đúng, mọi người&quot;,&quot;Không ai&quot;],a:2,t:&quot;Tôn trọng&quot;},
-  {q:&quot;Việc nhà ai nên làm?&quot;,o:[&quot;Chỉ nữ&quot;,&quot;Chỉ nam&quot;,&quot;Cả nam và nữ cùng chia sẻ&quot;,&quot;Không ai&quot;],a:2,t:&quot;Bình đẳng&quot;},
-  {q:&quot;Điều gì KHÔNG đúng về sự khác biệt nam nữ?&quot;,o:[&quot;Cơ thể khác nhau&quot;,&quot;Nam giỏi hơn nữ&quot;,&quot;Quyền bình đẳng&quot;,&quot;Cần tôn trọng&quot;],a:1,t:&quot;Bình đẳng&quot;},
-  {q:&quot;Bạn nam và bạn nữ nên đối xử với nhau thế nào?&quot;,o:[&quot;Xa lánh&quot;,&quot;Tôn trọng, thân thiện&quot;,&quot;Trêu chọc&quot;,&quot;Không nói chuyện&quot;],a:1,t:&quot;Ứng xử&quot;},
-],
-&quot;b25&quot;:[
-  {q:&quot;Tuổi dậy thì cần vệ sinh cá nhân thế nào?&quot;,o:[&quot;Không cần&quot;,&quot;Tắm rửa sạch sẽ hàng ngày&quot;,&quot;1 tuần 1 lần&quot;,&quot;Chỉ rửa tay&quot;],a:1,t:&quot;Vệ sinh&quot;},
-  {q:&quot;Tuổi dậy thì nên ăn uống thế nào?&quot;,o:[&quot;Ăn nhiều kẹo&quot;,&quot;Đủ chất, nhiều rau quả&quot;,&quot;Nhịn ăn&quot;,&quot;Chỉ ăn thịt&quot;],a:1,t:&quot;Dinh dưỡng&quot;},
-  {q:&quot;Mụn trứng cá tuổi dậy thì do?&quot;,o:[&quot;Ăn nhiều&quot;,&quot;Thay đổi hormone&quot;,&quot;Không học&quot;,&quot;Uống nước&quot;],a:1,t:&quot;Cơ thể&quot;},
-  {q:&quot;Khi có thay đổi cơ thể tuổi dậy thì, em nên?&quot;,o:[&quot;Lo sợ&quot;,&quot;Hỏi bố mẹ, thầy cô&quot;,&quot;Giấu&quot;,&quot;Bỏ học&quot;],a:1,t:&quot;Tâm lý&quot;},
-  {q:&quot;Hoạt động nào tốt cho sức khỏe tuổi dậy thì?&quot;,o:[&quot;Thức khuya chơi game&quot;,&quot;Tập thể dục đều đặn&quot;,&quot;Nhịn ăn&quot;,&quot;Ngồi cả ngày&quot;],a:1,t:&quot;Vận động&quot;},
-  {q:&quot;Tuổi dậy thì giọng nói nam thay đổi thế nào?&quot;,o:[&quot;Cao hơn&quot;,&quot;Trầm hơn&quot;,&quot;Không đổi&quot;,&quot;Mất giọng&quot;],a:1,t:&quot;Thay đổi&quot;},
-],
-&quot;b26&quot;:[
-  {q:&quot;Xâm hại trẻ em là gì?&quot;,o:[&quot;Cho kẹo&quot;,&quot;Hành vi làm tổn thương thể chất/tinh thần trẻ&quot;,&quot;Dạy học&quot;,&quot;Chơi cùng&quot;],a:1,t:&quot;Nhận biết&quot;},
-  {q:&quot;Khi bị ai đó đụng chạm khiến em khó chịu, em nên?&quot;,o:[&quot;Im lặng&quot;,&quot;Nói KHÔNG, bỏ đi, kể cho người lớn tin cậy&quot;,&quot;Đồng ý&quot;,&quot;Không làm gì&quot;],a:1,t:&quot;Tự bảo vệ&quot;},
-  {q:&quot;Vùng riêng tư trên cơ thể là gì?&quot;,o:[&quot;Tay&quot;,&quot;Chân&quot;,&quot;Vùng đồ bơi che&quot;,&quot;Đầu&quot;],a:2,t:&quot;Nhận biết&quot;},
-  {q:&quot;Ai KHÔNG được đụng vào vùng riêng tư của em?&quot;,o:[&quot;Bác sĩ khám bệnh (có bố mẹ)&quot;,&quot;Người lạ&quot;,&quot;Bố mẹ khi chăm sóc&quot;,&quot;Tất cả trừ B&quot;],a:1,t:&quot;Tự bảo vệ&quot;},
-  {q:&quot;Khi gặp nguy hiểm, em gọi số nào?&quot;,o:[&quot;113&quot;,&quot;114&quot;,&quot;111&quot;,&quot;115&quot;],a:2,t:&quot;Ứng phó&quot;,ex:&quot;Tổng đài bảo vệ trẻ em: 111&quot;},
-  {q:&quot;Quy tắc 5 KHÔNG gồm?&quot;,o:[&quot;Không đi, không nhận, không mở, không nói, không giấu&quot;,&quot;Không ăn, không ngủ&quot;,&quot;Không học, không chơi&quot;,&quot;Không nói, không cười&quot;],a:0,t:&quot;Quy tắc&quot;},
-  {q:&quot;Em nên kể cho ai khi bị xâm hại?&quot;,o:[&quot;Không ai&quot;,&quot;Bố mẹ, thầy cô, người lớn tin cậy&quot;,&quot;Bạn bè trên mạng&quot;,&quot;Người lạ&quot;],a:1,t:&quot;Tự bảo vệ&quot;},
-  {q:&quot;Bí mật nào cần phải kể cho người lớn?&quot;,o:[&quot;Quà sinh nhật&quot;,&quot;Bí mật khiến em sợ hãi, khó chịu&quot;,&quot;Trò chơi&quot;,&quot;Bài kiểm tra&quot;],a:1,t:&quot;An toàn&quot;},
-],
-&quot;b28&quot;:[
-  {q:&quot;Môi trường cung cấp gì cho sinh vật?&quot;,o:[&quot;Chỉ nước&quot;,&quot;Thức ăn, nước, không khí, nơi ở&quot;,&quot;Chỉ không khí&quot;,&quot;Không cung cấp gì&quot;],a:1,t:&quot;Chức năng MT&quot;},
-  {q:&quot;Rừng có vai trò gì?&quot;,o:[&quot;Chỉ đẹp&quot;,&quot;Cung cấp O2, giữ nước, chống xói mòn&quot;,&quot;Không có vai trò&quot;,&quot;Chỉ cho gỗ&quot;],a:1,t:&quot;Rừng&quot;},
-  {q:&quot;Nước sạch cần cho gì?&quot;,o:[&quot;Chỉ uống&quot;,&quot;Sinh hoạt, sản xuất, nông nghiệp&quot;,&quot;Chỉ tưới cây&quot;,&quot;Không cần&quot;],a:1,t:&quot;Nước&quot;},
-  {q:&quot;Không khí trong lành cần cho?&quot;,o:[&quot;Chỉ con người&quot;,&quot;Tất cả sinh vật&quot;,&quot;Chỉ cây&quot;,&quot;Chỉ động vật&quot;],a:1,t:&quot;Không khí&quot;},
-  {q:&quot;Đất có vai trò gì?&quot;,o:[&quot;Không quan trọng&quot;,&quot;Nơi trồng cây, xây nhà, sinh vật sống&quot;,&quot;Chỉ bẩn&quot;,&quot;Chỉ cho khoáng sản&quot;],a:1,t:&quot;Đất&quot;},
-  {q:&quot;Môi trường bị ô nhiễm ảnh hưởng gì?&quot;,o:[&quot;Không ảnh hưởng&quot;,&quot;Sức khỏe con người và sinh vật&quot;,&quot;Chỉ cây&quot;,&quot;Chỉ nước&quot;],a:1,t:&quot;Ô nhiễm&quot;},
-],
-&quot;b29&quot;:[
-  {q:&quot;Hành vi nào gây hại môi trường?&quot;,o:[&quot;Trồng cây&quot;,&quot;Xả rác bừa bãi&quot;,&quot;Tiết kiệm nước&quot;,&quot;Tái chế&quot;],a:1,t:&quot;Tác động xấu&quot;},
-  {q:&quot;Biện pháp bảo vệ môi trường?&quot;,o:[&quot;Xả rác&quot;,&quot;Trồng cây, tiết kiệm năng lượng&quot;,&quot;Chặt rừng&quot;,&quot;Đốt rác&quot;],a:1,t:&quot;Bảo vệ MT&quot;},
-  {q:&quot;3R là gì?&quot;,o:[&quot;Reduce, Reuse, Recycle&quot;,&quot;Run, Rest, Read&quot;,&quot;Red, Rose, Rain&quot;,&quot;Không biết&quot;],a:0,t:&quot;3R&quot;,ex:&quot;Reduce=Giảm thiểu, Reuse=Tái sử dụng, Recycle=Tái chế&quot;},
-  {q:&quot;Rừng bị chặt phá gây ra hậu quả gì?&quot;,o:[&quot;Không sao&quot;,&quot;Lũ lụt, xói mòn, mất đa dạng sinh học&quot;,&quot;Đẹp hơn&quot;,&quot;Mát hơn&quot;],a:1,t:&quot;Hậu quả&quot;},
-  {q:&quot;Năng lượng sạch gồm?&quot;,o:[&quot;Than đá&quot;,&quot;Năng lượng mặt trời, gió&quot;,&quot;Xăng dầu&quot;,&quot;Khí gas&quot;],a:1,t:&quot;Năng lượng&quot;},
-  {q:&quot;Em có thể làm gì để bảo vệ môi trường?&quot;,o:[&quot;Xả rác&quot;,&quot;Tiết kiệm điện nước, phân loại rác&quot;,&quot;Đốt rừng&quot;,&quot;Lãng phí&quot;],a:1,t:&quot;Hành động&quot;},
-  {q:&quot;Ô nhiễm nước do nguyên nhân nào?&quot;,o:[&quot;Trồng cây&quot;,&quot;Xả nước thải chưa xử lý&quot;,&quot;Tái chế&quot;,&quot;Thu gom rác&quot;],a:1,t:&quot;Ô nhiễm&quot;},
-  {q:&quot;Động vật quý hiếm cần được?&quot;,o:[&quot;Săn bắt&quot;,&quot;Bảo vệ, bảo tồn&quot;,&quot;Nuôi làm thú cưng&quot;,&quot;Bán&quot;],a:1,t:&quot;Bảo tồn&quot;},
-],
-&quot;b30&quot;:[
-  {q:&quot;Sinh vật sống cần gì từ môi trường?&quot;,o:[&quot;Chỉ nước&quot;,&quot;Thức ăn, nước, không khí, ánh sáng&quot;,&quot;Chỉ đất&quot;,&quot;Không cần&quot;],a:1,t:&quot;Ôn tập&quot;},
-  {q:&quot;Chuỗi thức ăn bắt đầu từ?&quot;,o:[&quot;Động vật&quot;,&quot;Thực vật&quot;,&quot;Con người&quot;,&quot;Nấm&quot;],a:1,t:&quot;Ôn tập&quot;},
-  {q:&quot;Rừng cung cấp gì?&quot;,o:[&quot;Chỉ gỗ&quot;,&quot;Oxy, giữ nước, đa dạng sinh học&quot;,&quot;Ô nhiễm&quot;,&quot;Rác&quot;],a:1,t:&quot;Ôn tập&quot;},
-  {q:&quot;3R giúp gì?&quot;,o:[&quot;Tăng rác&quot;,&quot;Giảm rác thải, bảo vệ môi trường&quot;,&quot;Tăng ô nhiễm&quot;,&quot;Không giúp gì&quot;],a:1,t:&quot;Ôn tập&quot;},
-  {q:&quot;Hành vi nào bảo vệ môi trường?&quot;,o:[&quot;Vứt rác xuống sông&quot;,&quot;Phân loại rác tại nguồn&quot;,&quot;Đốt rừng&quot;,&quot;Xả khói&quot;],a:1,t:&quot;Ôn tập&quot;},
-  {q:&quot;Ai chịu trách nhiệm bảo vệ môi trường?&quot;,o:[&quot;Chỉ nhà nước&quot;,&quot;Chỉ người lớn&quot;,&quot;Mọi người, kể cả học sinh&quot;,&quot;Không ai&quot;],a:2,t:&quot;Ôn tập&quot;},
-],
-};
-
-
-var cfg={},st={},tmrI;
+function sndUrgent(){playTone(880,.06,&#x27;square&#x27;,.1);setTimeout(function(){playTone(880,.06,&#x27;square&#x27;,.1)},120)}
+function sndWin(){var notes=[523,587,659,784,1047];for(var i=0;i&lt;notes.length;i++){(function(n,delay){setTimeout(function(){playTone(n,.18,&#x27;sine&#x27;,.2)},delay)})(notes[i],i*100)}}
+function sndTick(){playTone(1000,.04,&#x27;sine&#x27;,.08)}
 function startGame(){
   var lid=document.getElementById(&#x27;lesson&#x27;).value;
   var ln=document.getElementById(&#x27;lesson&#x27;).selectedOptions[0].text;
@@ -1989,7 +1852,7 @@ function startGame(){
   document.getElementById(&#x27;gameArea&#x27;).classList.remove(&#x27;hidden&#x27;);
   document.getElementById(&#x27;qT&#x27;).textContent=cfg.total;
   document.getElementById(&#x27;lTag&#x27;).textContent=ln.length&gt;35?ln.substring(0,33)+&#x27;...&#x27;:ln;
-  playTone(440,.1,&#x27;sine&#x27;,.15);setTimeout(function(){playTone(554,.1,&#x27;sine&#x27;,.15),100);setTimeout(function(){playTone(659,.15,&#x27;sine&#x27;,.15),200);
+  playTone(440,.1,&#x27;sine&#x27;,.15);setTimeout(function(){playTone(554,.1,&#x27;sine&#x27;,.15},100);setTimeout(function(){playTone(659,.15,&#x27;sine&#x27;,.15},200);
   showQ();
 }
 function showQ(){
@@ -2005,7 +1868,7 @@ function showQ(){
   document.getElementById(&#x27;btnN&#x27;).classList.add(&#x27;hidden&#x27;);
   document.getElementById(&#x27;pbar&#x27;).style.width=(st.qIdx/cfg.total*100)+&#x27;%&#x27;;
   var lb=[&#x27;A&#x27;,&#x27;B&#x27;,&#x27;C&#x27;,&#x27;D&#x27;];
-  document.getElementById(&#x27;optsD&#x27;).innerHTML=q.o.map(function(o,i) &#x27;&lt;div class=&quot;opt&quot; onclick=&quot;ans(&#x27;+i+&#x27;)&quot; id=&quot;o&#x27;+i+&#x27;&quot;&gt;&#x27;+lb[i]+&#x27;. &#x27;+o+&#x27;&lt;/div&gt;&#x27;).join(&#x27;&#x27;);
+  document.getElementById(&#x27;optsD&#x27;).innerHTML=q.o.map(function(o,i){return &#x27;&lt;div class=&quot;opt&quot; onclick=&quot;ans(&#x27;+i+&#x27;)&quot; id=&quot;o&#x27;+i+&#x27;&quot;&gt;&#x27;+lb[i]+&#x27;. &#x27;+o+&#x27;&lt;/div&gt;&#x27;}).join(&#x27;&#x27;);
   startTmr();
 }
 function ans(idx){
@@ -2196,98 +2059,11 @@ h1{font-size:clamp(1.5em,5vw,2em)}
 var audioCtx,soundOn=true;
 function initAudio(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)()}
 function playTone(f,d,t,v){if(!soundOn)return;initAudio();var o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type=t||&#x27;sine&#x27;;o.frequency.value=f;g.gain.value=v||.15;g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+d);o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+d)}
-function sndOk(){playTone(523,.08,&#x27;sine&#x27;,.22);setTimeout(function(){playTone(659,.08,&#x27;sine&#x27;,.22),80);setTimeout(function(){playTone(784,.15,&#x27;sine&#x27;,.22),160)}
+function sndOk(){playTone(523,.08,&#x27;sine&#x27;,.22);setTimeout(function(){playTone(659,.08,&#x27;sine&#x27;,.22)},80);setTimeout(function(){playTone(784,.15,&#x27;sine&#x27;,.22)},160)}
 function sndNo(){playTone(200,.25,&#x27;sawtooth&#x27;,.12)}
-function sndUrgent(){playTone(880,.06,&#x27;square&#x27;,.1);setTimeout(function(){playTone(880,.06,&#x27;square&#x27;,.1),120)}
-function sndWin(){[523,587,659,784,1047].forEach(function(f,i) setTimeout(function(){playTone(f,.18,&#x27;sine&#x27;,.2),i*100))}
-function toggleSound(){soundOn=!soundOn;document.getElementById(&#x27;volBtn&#x27;).textContent=soundOn?&#x27;🔊&#x27;:&#x27;🔇&#x27;}
-
-var Q={
-&quot;b18&quot;:[
-  {q:&quot;Thủ đô của Trung Quốc là?&quot;,o:[&quot;Thượng Hải&quot;,&quot;Bắc Kinh&quot;,&quot;Quảng Châu&quot;,&quot;Hồng Kông&quot;],a:1,t:&quot;Địa lý&quot;},
-  {q:&quot;Trung Quốc có dân số đứng thứ mấy thế giới?&quot;,o:[&quot;1&quot;,&quot;2&quot;,&quot;3&quot;,&quot;5&quot;],a:1,t:&quot;Dân số&quot;},
-  {q:&quot;Vạn Lý Trường Thành ở nước nào?&quot;,o:[&quot;Nhật Bản&quot;,&quot;Hàn Quốc&quot;,&quot;Trung Quốc&quot;,&quot;Ấn Độ&quot;],a:2,t:&quot;Lịch sử&quot;},
-  {q:&quot;Trung Quốc nằm ở châu lục nào?&quot;,o:[&quot;Châu Âu&quot;,&quot;Châu Á&quot;,&quot;Châu Phi&quot;,&quot;Châu Mỹ&quot;],a:1,t:&quot;Địa lý&quot;},
-  {q:&quot;Việt Nam giáp Trung Quốc ở phía nào?&quot;,o:[&quot;Nam&quot;,&quot;Đông&quot;,&quot;Bắc&quot;,&quot;Tây&quot;],a:2,t:&quot;Vị trí&quot;},
-  {q:&quot;Diện tích Trung Quốc đứng thứ mấy thế giới?&quot;,o:[&quot;1&quot;,&quot;2&quot;,&quot;3&quot;,&quot;4&quot;],a:2,t:&quot;Địa lý&quot;},
-],
-&quot;b19&quot;:[
-  {q:&quot;Thủ đô của Lào là?&quot;,o:[&quot;Viêng Chăn&quot;,&quot;Luông Pha-bang&quot;,&quot;Pạc Xế&quot;,&quot;Xa-van-na-khệt&quot;],a:0,t:&quot;Địa lý&quot;},
-  {q:&quot;Lào là nước có đặc điểm gì?&quot;,o:[&quot;Nhiều biển&quot;,&quot;Không giáp biển&quot;,&quot;Nhiều đảo&quot;,&quot;Rất lạnh&quot;],a:1,t:&quot;Địa lý&quot;},
-  {q:&quot;Việt Nam giáp Lào ở phía nào?&quot;,o:[&quot;Bắc&quot;,&quot;Nam&quot;,&quot;Tây&quot;,&quot;Đông&quot;],a:2,t:&quot;Vị trí&quot;},
-  {q:&quot;Tết Bun-pi-may của Lào tổ chức vào tháng mấy?&quot;,o:[&quot;1&quot;,&quot;4&quot;,&quot;7&quot;,&quot;12&quot;],a:1,t:&quot;Văn hóa&quot;},
-  {q:&quot;Lào thuộc khu vực nào?&quot;,o:[&quot;Đông Á&quot;,&quot;Đông Nam Á&quot;,&quot;Nam Á&quot;,&quot;Tây Á&quot;],a:1,t:&quot;Địa lý&quot;},
-  {q:&quot;Quan hệ Việt Nam – Lào thế nào?&quot;,o:[&quot;Xa lạ&quot;,&quot;Đặc biệt, anh em&quot;,&quot;Đối đầu&quot;,&quot;Không quan hệ&quot;],a:1,t:&quot;Quan hệ&quot;},
-],
-&quot;b20&quot;:[
-  {q:&quot;Thủ đô của Cam-pu-chia là?&quot;,o:[&quot;Xiêm Riệp&quot;,&quot;Phnôm Pênh&quot;,&quot;Bát-tam-bang&quot;,&quot;Kam-pốt&quot;],a:1,t:&quot;Địa lý&quot;},
-  {q:&quot;Công trình nổi tiếng của Cam-pu-chia?&quot;,o:[&quot;Vạn Lý Trường Thành&quot;,&quot;Đền Ăng-co Vát&quot;,&quot;Tháp Eiffel&quot;,&quot;Kim tự tháp&quot;],a:1,t:&quot;Lịch sử&quot;},
-  {q:&quot;Việt Nam giáp Cam-pu-chia ở phía nào?&quot;,o:[&quot;Bắc&quot;,&quot;Tây Nam&quot;,&quot;Đông&quot;,&quot;Bắc&quot;],a:1,t:&quot;Vị trí&quot;},
-  {q:&quot;Biển Hồ ở Cam-pu-chia còn gọi là?&quot;,o:[&quot;Hồ Ba Bể&quot;,&quot;Tông-lê Sáp&quot;,&quot;Hồ Gươm&quot;,&quot;Hồ Tây&quot;],a:1,t:&quot;Địa lý&quot;},
-  {q:&quot;Cam-pu-chia thuộc khu vực?&quot;,o:[&quot;Đông Á&quot;,&quot;Đông Nam Á&quot;,&quot;Châu Phi&quot;,&quot;Châu Âu&quot;],a:1,t:&quot;Địa lý&quot;},
-  {q:&quot;Đền Ăng-co Vát được xây dựng vào thế kỉ?&quot;,o:[&quot;5&quot;,&quot;8&quot;,&quot;12&quot;,&quot;20&quot;],a:2,t:&quot;Lịch sử&quot;},
-],
-&quot;b21&quot;:[
-  {q:&quot;ASEAN viết tắt của gì?&quot;,o:[&quot;Liên minh châu Âu&quot;,&quot;Hiệp hội các quốc gia ĐNA&quot;,&quot;Liên Hợp Quốc&quot;,&quot;NATO&quot;],a:1,t:&quot;Tổ chức&quot;},
-  {q:&quot;ASEAN thành lập năm nào?&quot;,o:[&quot;1945&quot;,&quot;1967&quot;,&quot;1975&quot;,&quot;2000&quot;],a:1,t:&quot;Lịch sử&quot;},
-  {q:&quot;ASEAN có bao nhiêu thành viên?&quot;,o:[&quot;5&quot;,&quot;8&quot;,&quot;10&quot;,&quot;15&quot;],a:2,t:&quot;Thành viên&quot;},
-  {q:&quot;Việt Nam gia nhập ASEAN năm nào?&quot;,o:[&quot;1967&quot;,&quot;1986&quot;,&quot;1995&quot;,&quot;2000&quot;],a:2,t:&quot;Việt Nam&quot;},
-  {q:&quot;Mục tiêu của ASEAN là gì?&quot;,o:[&quot;Chiến tranh&quot;,&quot;Hòa bình, hợp tác, phát triển&quot;,&quot;Cạnh tranh&quot;,&quot;Chia rẽ&quot;],a:1,t:&quot;Mục tiêu&quot;},
-  {q:&quot;Khẩu hiệu ASEAN: Một tầm nhìn, Một bản sắc, Một...?&quot;,o:[&quot;Đất nước&quot;,&quot;Cộng đồng&quot;,&quot;Ngôn ngữ&quot;,&quot;Tiền tệ&quot;],a:1,t:&quot;ASEAN&quot;},
-],
-&quot;b22&quot;:[
-  {q:&quot;Thế giới có mấy châu lục?&quot;,o:[&quot;4&quot;,&quot;5&quot;,&quot;6&quot;,&quot;7&quot;],a:2,t:&quot;Châu lục&quot;},
-  {q:&quot;Châu lục lớn nhất?&quot;,o:[&quot;Châu Phi&quot;,&quot;Châu Á&quot;,&quot;Châu Mỹ&quot;,&quot;Châu Âu&quot;],a:1,t:&quot;Châu lục&quot;},
-  {q:&quot;Thế giới có mấy đại dương?&quot;,o:[&quot;3&quot;,&quot;4&quot;,&quot;5&quot;,&quot;6&quot;],a:1,t:&quot;Đại dương&quot;},
-  {q:&quot;Đại dương lớn nhất?&quot;,o:[&quot;Đại Tây Dương&quot;,&quot;Ấn Độ Dương&quot;,&quot;Thái Bình Dương&quot;,&quot;Bắc Băng Dương&quot;],a:2,t:&quot;Đại dương&quot;},
-  {q:&quot;Việt Nam thuộc châu lục nào?&quot;,o:[&quot;Châu Âu&quot;,&quot;Châu Phi&quot;,&quot;Châu Á&quot;,&quot;Châu Mỹ&quot;],a:2,t:&quot;Vị trí&quot;},
-  {q:&quot;Châu lục nhỏ nhất?&quot;,o:[&quot;Châu Á&quot;,&quot;Châu Âu&quot;,&quot;Châu Úc&quot;,&quot;Châu Phi&quot;],a:2,t:&quot;Châu lục&quot;},
-  {q:&quot;Nam Cực là châu lục có đặc điểm gì?&quot;,o:[&quot;Nóng nhất&quot;,&quot;Lạnh nhất, nhiều băng&quot;,&quot;Đông dân nhất&quot;,&quot;Nhỏ nhất&quot;],a:1,t:&quot;Châu lục&quot;},
-],
-&quot;b23&quot;:[
-  {q:&quot;Thế giới có khoảng bao nhiêu tỉ người (2024)?&quot;,o:[&quot;3 tỉ&quot;,&quot;5 tỉ&quot;,&quot;8 tỉ&quot;,&quot;15 tỉ&quot;],a:2,t:&quot;Dân số&quot;},
-  {q:&quot;Châu lục đông dân nhất?&quot;,o:[&quot;Châu Mỹ&quot;,&quot;Châu Á&quot;,&quot;Châu Phi&quot;,&quot;Châu Âu&quot;],a:1,t:&quot;Dân số&quot;},
-  {q:&quot;Trên thế giới có mấy chủng tộc chính?&quot;,o:[&quot;2&quot;,&quot;3&quot;,&quot;4&quot;,&quot;5&quot;],a:1,t:&quot;Chủng tộc&quot;,ex:&quot;3 chủng tộc: da trắng, da vàng, da đen.&quot;},
-  {q:&quot;Người Việt Nam thuộc chủng tộc nào?&quot;,o:[&quot;Da trắng&quot;,&quot;Da vàng&quot;,&quot;Da đen&quot;,&quot;Hỗn hợp&quot;],a:1,t:&quot;Chủng tộc&quot;},
-  {q:&quot;Các chủng tộc có bình đẳng không?&quot;,o:[&quot;Không&quot;,&quot;Có, mọi chủng tộc bình đẳng&quot;,&quot;Chỉ da trắng&quot;,&quot;Chỉ da vàng&quot;],a:1,t:&quot;Bình đẳng&quot;},
-  {q:&quot;Dân số tăng nhanh gây vấn đề gì?&quot;,o:[&quot;Không vấn đề&quot;,&quot;Thiếu lương thực, ô nhiễm&quot;,&quot;Tốt hơn&quot;,&quot;Giàu hơn&quot;],a:1,t:&quot;Dân số&quot;},
-],
-&quot;b24&quot;:[
-  {q:&quot;Nền văn minh Ai Cập phát triển bên dòng sông nào?&quot;,o:[&quot;Sông Hồng&quot;,&quot;Sông Nin&quot;,&quot;Sông Mê Kông&quot;,&quot;Sông Đa-nuýp&quot;],a:1,t:&quot;Ai Cập&quot;},
-  {q:&quot;Kim tự tháp dùng để làm gì?&quot;,o:[&quot;Ở&quot;,&quot;Chôn cất pharaoh&quot;,&quot;Trường học&quot;,&quot;Chợ&quot;],a:1,t:&quot;Ai Cập&quot;},
-  {q:&quot;Ai Cập cổ đại thuộc châu lục nào?&quot;,o:[&quot;Châu Á&quot;,&quot;Châu Âu&quot;,&quot;Châu Phi&quot;,&quot;Châu Mỹ&quot;],a:2,t:&quot;Địa lý&quot;},
-  {q:&quot;Người Ai Cập cổ đại phát minh ra gì?&quot;,o:[&quot;Ô tô&quot;,&quot;Chữ viết tượng hình&quot;,&quot;Máy tính&quot;,&quot;Điện thoại&quot;],a:1,t:&quot;Phát minh&quot;},
-  {q:&quot;Tượng Nhân sư ở đâu?&quot;,o:[&quot;Hy Lạp&quot;,&quot;Ai Cập&quot;,&quot;La Mã&quot;,&quot;Trung Quốc&quot;],a:1,t:&quot;Ai Cập&quot;},
-  {q:&quot;Kim tự tháp lớn nhất tên gì?&quot;,o:[&quot;Kê-ốp&quot;,&quot;Pi-ra-mít&quot;,&quot;Pha-ra-on&quot;,&quot;Cai-rô&quot;],a:0,t:&quot;Ai Cập&quot;},
-],
-&quot;b25&quot;:[
-  {q:&quot;Nền văn minh Hy Lạp phát triển ở đâu?&quot;,o:[&quot;Châu Á&quot;,&quot;Châu Phi&quot;,&quot;Châu Âu&quot;,&quot;Châu Mỹ&quot;],a:2,t:&quot;Hy Lạp&quot;},
-  {q:&quot;Thế vận hội Olympic bắt nguồn từ?&quot;,o:[&quot;Ai Cập&quot;,&quot;Hy Lạp&quot;,&quot;La Mã&quot;,&quot;Trung Quốc&quot;],a:1,t:&quot;Olympic&quot;},
-  {q:&quot;Thủ đô Hy Lạp cổ đại nổi tiếng?&quot;,o:[&quot;Pa-ri&quot;,&quot;A-ten&quot;,&quot;Rô-ma&quot;,&quot;Luân Đôn&quot;],a:1,t:&quot;Hy Lạp&quot;},
-  {q:&quot;Hy Lạp cổ đại nổi tiếng về gì?&quot;,o:[&quot;Kim tự tháp&quot;,&quot;Triết học, nghệ thuật, khoa học&quot;,&quot;Vạn lý trường thành&quot;,&quot;Kim cương&quot;],a:1,t:&quot;Văn minh&quot;},
-  {q:&quot;Đền Parthenon ở thành phố nào?&quot;,o:[&quot;A-ten&quot;,&quot;Rô-ma&quot;,&quot;Cai-rô&quot;,&quot;Bắc Kinh&quot;],a:0,t:&quot;Hy Lạp&quot;},
-  {q:&quot;Người Hy Lạp cổ đại sáng tạo ra thể loại văn học nào?&quot;,o:[&quot;Truyện tranh&quot;,&quot;Kịch (bi kịch, hài kịch)&quot;,&quot;Tiểu thuyết&quot;,&quot;Manga&quot;],a:1,t:&quot;Văn học&quot;},
-],
-&quot;b26&quot;:[
-  {q:&quot;Xây dựng thế giới xanh-sạch-đẹp cần?&quot;,o:[&quot;Xả rác&quot;,&quot;Bảo vệ môi trường, trồng cây&quot;,&quot;Phá rừng&quot;,&quot;Ô nhiễm&quot;],a:1,t:&quot;Môi trường&quot;},
-  {q:&quot;Biến đổi khí hậu gây ra gì?&quot;,o:[&quot;Mát mẻ hơn&quot;,&quot;Băng tan, mực nước biển dâng, thiên tai&quot;,&quot;Đẹp hơn&quot;,&quot;Không ảnh hưởng&quot;],a:1,t:&quot;Khí hậu&quot;},
-  {q:&quot;Trẻ em có thể làm gì cho Trái Đất?&quot;,o:[&quot;Không làm gì&quot;,&quot;Tiết kiệm điện, nước, phân loại rác&quot;,&quot;Xả rác&quot;,&quot;Lãng phí&quot;],a:1,t:&quot;Hành động&quot;},
-  {q:&quot;Ngày Trái Đất là ngày nào?&quot;,o:[&quot;1/1&quot;,&quot;22/4&quot;,&quot;2/9&quot;,&quot;25/12&quot;],a:1,t:&quot;Ngày lễ&quot;},
-  {q:&quot;Phát triển bền vững nghĩa là?&quot;,o:[&quot;Chỉ phát triển kinh tế&quot;,&quot;Phát triển nhưng bảo vệ MT cho thế hệ sau&quot;,&quot;Không phát triển&quot;,&quot;Phá hủy MT&quot;],a:1,t:&quot;Khái niệm&quot;},
-  {q:&quot;Nguồn năng lượng nào sạch?&quot;,o:[&quot;Than đá&quot;,&quot;Xăng dầu&quot;,&quot;Năng lượng mặt trời, gió&quot;,&quot;Khí gas&quot;],a:2,t:&quot;Năng lượng&quot;},
-],
-&quot;b27&quot;:[
-  {q:&quot;Hòa bình nghĩa là?&quot;,o:[&quot;Chiến tranh&quot;,&quot;Không có chiến tranh, xung đột&quot;,&quot;Cạnh tranh&quot;,&quot;Chia rẽ&quot;],a:1,t:&quot;Hòa bình&quot;},
-  {q:&quot;Tổ chức quốc tế nào giữ gìn hòa bình?&quot;,o:[&quot;FIFA&quot;,&quot;Liên Hợp Quốc&quot;,&quot;WTO&quot;,&quot;ASEAN&quot;],a:1,t:&quot;Tổ chức&quot;},
-  {q:&quot;Liên Hợp Quốc thành lập năm nào?&quot;,o:[&quot;1920&quot;,&quot;1945&quot;,&quot;1967&quot;,&quot;2000&quot;],a:1,t:&quot;Lịch sử&quot;},
-  {q:&quot;Trẻ em cần gì nhất để phát triển?&quot;,o:[&quot;Chiến tranh&quot;,&quot;Hòa bình, được học hành&quot;,&quot;Xung đột&quot;,&quot;Nghèo đói&quot;],a:1,t:&quot;Quyền trẻ em&quot;},
-  {q:&quot;Biểu tượng hòa bình là con gì?&quot;,o:[&quot;Sư tử&quot;,&quot;Chim bồ câu trắng&quot;,&quot;Đại bàng&quot;,&quot;Rồng&quot;],a:1,t:&quot;Biểu tượng&quot;},
-  {q:&quot;Ngày Quốc tế Hòa bình: 21 tháng mấy?&quot;,o:[&quot;3&quot;,&quot;6&quot;,&quot;9&quot;,&quot;12&quot;],a:2,t:&quot;Ngày lễ&quot;},
-],
-};
-
-
-var cfg={},st={},tmrI;
+function sndUrgent(){playTone(880,.06,&#x27;square&#x27;,.1);setTimeout(function(){playTone(880,.06,&#x27;square&#x27;,.1)},120)}
+function sndWin(){var notes=[523,587,659,784,1047];for(var i=0;i&lt;notes.length;i++){(function(n,delay){setTimeout(function(){playTone(n,.18,&#x27;sine&#x27;,.2)},delay)})(notes[i],i*100)}}
+function sndTick(){playTone(1000,.04,&#x27;sine&#x27;,.08)}
 function startGame(){
   var lid=document.getElementById(&#x27;lesson&#x27;).value;
   var ln=document.getElementById(&#x27;lesson&#x27;).selectedOptions[0].text;
@@ -2299,7 +2075,7 @@ function startGame(){
   document.getElementById(&#x27;gameArea&#x27;).classList.remove(&#x27;hidden&#x27;);
   document.getElementById(&#x27;qT&#x27;).textContent=cfg.total;
   document.getElementById(&#x27;lTag&#x27;).textContent=ln.length&gt;35?ln.substring(0,33)+&#x27;...&#x27;:ln;
-  playTone(440,.1,&#x27;sine&#x27;,.15);setTimeout(function(){playTone(554,.1,&#x27;sine&#x27;,.15),100);setTimeout(function(){playTone(659,.15,&#x27;sine&#x27;,.15),200);
+  playTone(440,.1,&#x27;sine&#x27;,.15);setTimeout(function(){playTone(554,.1,&#x27;sine&#x27;,.15},100);setTimeout(function(){playTone(659,.15,&#x27;sine&#x27;,.15},200);
   showQ();
 }
 function showQ(){
@@ -2315,7 +2091,7 @@ function showQ(){
   document.getElementById(&#x27;btnN&#x27;).classList.add(&#x27;hidden&#x27;);
   document.getElementById(&#x27;pbar&#x27;).style.width=(st.qIdx/cfg.total*100)+&#x27;%&#x27;;
   var lb=[&#x27;A&#x27;,&#x27;B&#x27;,&#x27;C&#x27;,&#x27;D&#x27;];
-  document.getElementById(&#x27;optsD&#x27;).innerHTML=q.o.map(function(o,i) &#x27;&lt;div class=&quot;opt&quot; onclick=&quot;ans(&#x27;+i+&#x27;)&quot; id=&quot;o&#x27;+i+&#x27;&quot;&gt;&#x27;+lb[i]+&#x27;. &#x27;+o+&#x27;&lt;/div&gt;&#x27;).join(&#x27;&#x27;);
+  document.getElementById(&#x27;optsD&#x27;).innerHTML=q.o.map(function(o,i){return &#x27;&lt;div class=&quot;opt&quot; onclick=&quot;ans(&#x27;+i+&#x27;)&quot; id=&quot;o&#x27;+i+&#x27;&quot;&gt;&#x27;+lb[i]+&#x27;. &#x27;+o+&#x27;&lt;/div&gt;&#x27;}).join(&#x27;&#x27;);
   startTmr();
 }
 function ans(idx){
@@ -2502,74 +2278,11 @@ h1{font-size:clamp(1.5em,5vw,2em)}
 var audioCtx,soundOn=true;
 function initAudio(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)()}
 function playTone(f,d,t,v){if(!soundOn)return;initAudio();var o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type=t||&#x27;sine&#x27;;o.frequency.value=f;g.gain.value=v||.15;g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+d);o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+d)}
-function sndOk(){playTone(523,.08,&#x27;sine&#x27;,.22);setTimeout(function(){playTone(659,.08,&#x27;sine&#x27;,.22),80);setTimeout(function(){playTone(784,.15,&#x27;sine&#x27;,.22),160)}
+function sndOk(){playTone(523,.08,&#x27;sine&#x27;,.22);setTimeout(function(){playTone(659,.08,&#x27;sine&#x27;,.22)},80);setTimeout(function(){playTone(784,.15,&#x27;sine&#x27;,.22)},160)}
 function sndNo(){playTone(200,.25,&#x27;sawtooth&#x27;,.12)}
-function sndUrgent(){playTone(880,.06,&#x27;square&#x27;,.1);setTimeout(function(){playTone(880,.06,&#x27;square&#x27;,.1),120)}
-function sndWin(){[523,587,659,784,1047].forEach(function(f,i) setTimeout(function(){playTone(f,.18,&#x27;sine&#x27;,.2),i*100))}
-function toggleSound(){soundOn=!soundOn;document.getElementById(&#x27;volBtn&#x27;).textContent=soundOn?&#x27;🔊&#x27;:&#x27;🔇&#x27;}
-
-var Q={
-&quot;t28&quot;:[
-  {q:&quot;Cảnh quan thiên nhiên gồm những gì?&quot;,o:[&quot;Chỉ nhà cửa&quot;,&quot;Núi, sông, biển, rừng, đồng ruộng...&quot;,&quot;Chỉ đường phố&quot;,&quot;Chỉ trường học&quot;],a:1,t:&quot;Cảnh quan&quot;},
-  {q:&quot;Bảo tồn cảnh quan thiên nhiên nghĩa là?&quot;,o:[&quot;Phá hủy&quot;,&quot;Giữ gìn, bảo vệ vẻ đẹp tự nhiên&quot;,&quot;Xây nhà&quot;,&quot;Đào đất&quot;],a:1,t:&quot;Bảo tồn&quot;},
-  {q:&quot;Em có thể làm gì để bảo vệ cảnh quan?&quot;,o:[&quot;Xả rác&quot;,&quot;Không vứt rác, trồng cây, tuyên truyền&quot;,&quot;Phá cây&quot;,&quot;Bẻ hoa&quot;],a:1,t:&quot;Hành động&quot;},
-  {q:&quot;Di tích lịch sử cần được?&quot;,o:[&quot;Phá bỏ&quot;,&quot;Bảo vệ, tôn tạo&quot;,&quot;Bỏ quên&quot;,&quot;Viết vẽ lên&quot;],a:1,t:&quot;Di tích&quot;},
-  {q:&quot;Sản phẩm tuyên truyền bảo tồn có thể là?&quot;,o:[&quot;Rác&quot;,&quot;Tranh vẽ, poster, bài thuyết trình&quot;,&quot;Đá&quot;,&quot;Bụi&quot;],a:1,t:&quot;Tuyên truyền&quot;},
-  {q:&quot;Quê hương em có gì đẹp?&quot;,o:[&quot;Không có gì&quot;,&quot;Cảnh đẹp, con người, văn hóa, ẩm thực&quot;,&quot;Chỉ rác&quot;,&quot;Chỉ bụi&quot;],a:1,t:&quot;Quê hương&quot;},
-  {q:&quot;Tại sao cần tự hào về quê hương?&quot;,o:[&quot;Không cần&quot;,&quot;Vì quê hương nuôi dưỡng ta, có nhiều giá trị&quot;,&quot;Để khoe&quot;,&quot;Không lý do&quot;],a:1,t:&quot;Tình cảm&quot;},
-  {q:&quot;Cách thể hiện tình yêu quê hương?&quot;,o:[&quot;Phá hoại&quot;,&quot;Giữ gìn, quảng bá, bảo vệ&quot;,&quot;Bỏ đi&quot;,&quot;Quên&quot;],a:1,t:&quot;Hành động&quot;},
-],
-&quot;t30&quot;:[
-  {q:&quot;Ô nhiễm môi trường quanh em do đâu?&quot;,o:[&quot;Trồng cây&quot;,&quot;Xả rác, khói xe, nước thải&quot;,&quot;Thu gom rác&quot;,&quot;Tái chế&quot;],a:1,t:&quot;Ô nhiễm&quot;},
-  {q:&quot;Phiếu khảo sát thực trạng MT cần ghi gì?&quot;,o:[&quot;Chỉ tên&quot;,&quot;Địa điểm, nội dung, kết quả, người thực hiện&quot;,&quot;Chỉ ngày&quot;,&quot;Không ghi gì&quot;],a:1,t:&quot;Khảo sát&quot;},
-  {q:&quot;Bảng tin Môi trường dùng để?&quot;,o:[&quot;Viết bài tập&quot;,&quot;Đưa thông tin, hình ảnh về MT&quot;,&quot;Dán kẹo&quot;,&quot;Vẽ tranh chơi&quot;],a:1,t:&quot;Bảng tin&quot;},
-  {q:&quot;Lao động công ích là gì?&quot;,o:[&quot;Đi chơi&quot;,&quot;Làm việc có ích cho cộng đồng không lương&quot;,&quot;Kiếm tiền&quot;,&quot;Nghỉ ngơi&quot;],a:1,t:&quot;Công ích&quot;},
-  {q:&quot;Kế hoạch lao động công ích cần có?&quot;,o:[&quot;Chỉ tên&quot;,&quot;Hoạt động, địa điểm, thời gian, phương tiện&quot;,&quot;Chỉ ngày&quot;,&quot;Không cần&quot;],a:1,t:&quot;Kế hoạch&quot;},
-  {q:&quot;Em có thể vận động ai tham gia bảo vệ MT?&quot;,o:[&quot;Không ai&quot;,&quot;Gia đình, hàng xóm, bạn bè&quot;,&quot;Chỉ GV&quot;,&quot;Chỉ bạn&quot;],a:1,t:&quot;Vận động&quot;},
-  {q:&quot;Sau khi lao động công ích, em nên?&quot;,o:[&quot;Quên đi&quot;,&quot;Báo cáo kết quả, chia sẻ kinh nghiệm&quot;,&quot;Không làm gì&quot;,&quot;Phàn nàn&quot;],a:1,t:&quot;Báo cáo&quot;},
-  {q:&quot;Tiểu phẩm về môi trường giúp gì?&quot;,o:[&quot;Không giúp gì&quot;,&quot;Tuyên truyền, nâng cao ý thức bảo vệ MT&quot;,&quot;Gây ồn&quot;,&quot;Mất thời gian&quot;],a:1,t:&quot;Tuyên truyền&quot;},
-],
-&quot;t32&quot;:[
-  {q:&quot;Nghề nghiệp là gì?&quot;,o:[&quot;Trò chơi&quot;,&quot;Công việc chuyên môn để kiếm sống, đóng góp XH&quot;,&quot;Sở thích&quot;,&quot;Môn học&quot;],a:1,t:&quot;Nghề nghiệp&quot;},
-  {q:&quot;Khi tìm hiểu nghề, em cần biết gì?&quot;,o:[&quot;Chỉ tên&quot;,&quot;Công việc, yêu cầu, đóng góp xã hội&quot;,&quot;Chỉ lương&quot;,&quot;Không cần&quot;],a:1,t:&quot;Tìm hiểu&quot;},
-  {q:&quot;Lập kế hoạch tìm hiểu nghề gồm?&quot;,o:[&quot;Chỉ hỏi&quot;,&quot;Mục tiêu, nhiệm vụ, người phụ trách, thời gian&quot;,&quot;Chỉ đọc&quot;,&quot;Không cần&quot;],a:1,t:&quot;Kế hoạch&quot;},
-  {q:&quot;Cách tìm hiểu nghề?&quot;,o:[&quot;Chỉ tưởng tượng&quot;,&quot;Đọc sách, hỏi người làm nghề, internet&quot;,&quot;Không tìm&quot;,&quot;Đoán&quot;],a:1,t:&quot;Phương pháp&quot;},
-  {q:&quot;Nghề hướng dẫn viên du lịch cần kỹ năng gì?&quot;,o:[&quot;Chỉ đi chơi&quot;,&quot;Giao tiếp, ngoại ngữ, hiểu biết văn hóa&quot;,&quot;Chỉ nấu ăn&quot;,&quot;Chỉ lái xe&quot;],a:1,t:&quot;Kỹ năng&quot;},
-  {q:&quot;Tại sao cần tìm hiểu nghề từ nhỏ?&quot;,o:[&quot;Không cần&quot;,&quot;Để có định hướng, chuẩn bị cho tương lai&quot;,&quot;Để chơi&quot;,&quot;Để khoe&quot;],a:1,t:&quot;Ý nghĩa&quot;},
-  {q:&quot;Nghề nào thuộc lĩnh vực y tế?&quot;,o:[&quot;Kiến trúc sư&quot;,&quot;Bác sĩ, y tá, dược sĩ&quot;,&quot;Thợ mộc&quot;,&quot;Lái xe&quot;],a:1,t:&quot;Phân loại&quot;},
-  {q:&quot;Mỗi nghề đều cần gì?&quot;,o:[&quot;Không cần gì&quot;,&quot;Kiến thức, kỹ năng, đạo đức nghề nghiệp&quot;,&quot;Chỉ tiền&quot;,&quot;Chỉ may mắn&quot;],a:1,t:&quot;Yêu cầu&quot;},
-],
-&quot;t33&quot;:[
-  {q:&quot;Tọa đàm Chọn nghề – Đường tới thành công giúp gì?&quot;,o:[&quot;Mất thời gian&quot;,&quot;Hiểu thêm về nghề qua chia sẻ chuyên gia&quot;,&quot;Không giúp gì&quot;,&quot;Chỉ vui&quot;],a:1,t:&quot;Tọa đàm&quot;},
-  {q:&quot;Khi gặp chuyên gia, em nên?&quot;,o:[&quot;Im lặng&quot;,&quot;Đặt câu hỏi về nghề, lắng nghe&quot;,&quot;Nói chuyện riêng&quot;,&quot;Ngủ&quot;],a:1,t:&quot;Kỹ năng&quot;},
-  {q:&quot;An toàn nghề nghiệp là gì?&quot;,o:[&quot;Không quan trọng&quot;,&quot;Bảo đảm sức khỏe, an toàn khi làm việc&quot;,&quot;Chỉ vui&quot;,&quot;Không cần&quot;],a:1,t:&quot;An toàn&quot;},
-  {q:&quot;Thiết bị bảo hộ lao động gồm?&quot;,o:[&quot;Đồ chơi&quot;,&quot;Mũ, khẩu trang, găng tay, áo bảo hộ&quot;,&quot;Kẹo&quot;,&quot;Bút&quot;],a:1,t:&quot;Bảo hộ&quot;},
-  {q:&quot;Nghề nào cần mũ bảo hộ?&quot;,o:[&quot;Giáo viên&quot;,&quot;Công nhân xây dựng&quot;,&quot;Nhân viên văn phòng&quot;,&quot;Ca sĩ&quot;],a:1,t:&quot;Bảo hộ&quot;},
-  {q:&quot;Ai cần tuân thủ quy định an toàn?&quot;,o:[&quot;Chỉ sếp&quot;,&quot;Tất cả người lao động&quot;,&quot;Chỉ công nhân&quot;,&quot;Không ai&quot;],a:1,t:&quot;Quy định&quot;},
-  {q:&quot;Trò chơi Vương quốc Lao động an toàn giúp?&quot;,o:[&quot;Mất thời gian&quot;,&quot;Nhớ tên thiết bị bảo hộ theo nghề&quot;,&quot;Không giúp gì&quot;,&quot;Chỉ vui&quot;],a:1,t:&quot;Trò chơi&quot;},
-],
-&quot;t34&quot;:[
-  {q:&quot;Ngày sinh Bác Hồ là ngày nào?&quot;,o:[&quot;2/9&quot;,&quot;19/5&quot;,&quot;1/6&quot;,&quot;20/11&quot;],a:1,t:&quot;Bác Hồ&quot;},
-  {q:&quot;Bác Hồ từng làm những nghề gì?&quot;,o:[&quot;Chỉ 1 nghề&quot;,&quot;Giáo viên, thợ ảnh, phụ bếp, nhà báo...&quot;,&quot;Không làm gì&quot;,&quot;Chỉ lãnh đạo&quot;],a:1,t:&quot;Bác Hồ&quot;},
-  {q:&quot;Bài học từ Bác Hồ về lao động?&quot;,o:[&quot;Lười biếng&quot;,&quot;Chăm chỉ, yêu lao động, sáng tạo&quot;,&quot;Không làm gì&quot;,&quot;Chỉ đọc sách&quot;],a:1,t:&quot;Bài học&quot;},
-  {q:&quot;Thuyết trình nghề em mơ ước cần gì?&quot;,o:[&quot;Chỉ nói tên&quot;,&quot;Tên nghề, thông tin, hình ảnh, lý do yêu thích&quot;,&quot;Không cần gì&quot;,&quot;Chỉ vẽ&quot;],a:1,t:&quot;Thuyết trình&quot;},
-  {q:&quot;Danh thiếp tương lai gồm thông tin gì?&quot;,o:[&quot;Chỉ tên&quot;,&quot;Tên, nghề, nơi làm việc, liên hệ (tưởng tượng)&quot;,&quot;Chỉ ảnh&quot;,&quot;Không cần gì&quot;],a:1,t:&quot;Sáng tạo&quot;},
-  {q:&quot;Bình chọn nghề ấn tượng dựa vào?&quot;,o:[&quot;Ai nói to&quot;,&quot;Nội dung thuyết trình, sự sáng tạo&quot;,&quot;Ai đẹp&quot;,&quot;Không tiêu chí&quot;],a:1,t:&quot;Đánh giá&quot;},
-],
-&quot;t35&quot;:[
-  {q:&quot;Môn HĐTN giúp em điều gì?&quot;,o:[&quot;Chỉ vui&quot;,&quot;Trải nghiệm thực tế, phát triển kỹ năng sống&quot;,&quot;Chỉ học thuộc&quot;,&quot;Không giúp gì&quot;],a:1,t:&quot;Ôn tập&quot;},
-  {q:&quot;Bảo vệ cảnh quan thiên nhiên bằng cách?&quot;,o:[&quot;Phá hoại&quot;,&quot;Giữ gìn, không xả rác, trồng cây&quot;,&quot;Bẻ hoa&quot;,&quot;Viết vẽ lên&quot;],a:1,t:&quot;Ôn tập&quot;},
-  {q:&quot;Lao động công ích giúp gì?&quot;,o:[&quot;Mất thời gian&quot;,&quot;Cộng đồng sạch đẹp, rèn ý thức&quot;,&quot;Không giúp gì&quot;,&quot;Chỉ mệt&quot;],a:1,t:&quot;Ôn tập&quot;},
-  {q:&quot;Khi tìm hiểu nghề, em cần?&quot;,o:[&quot;Không cần gì&quot;,&quot;Tìm hiểu công việc, kỹ năng, an toàn&quot;,&quot;Chỉ biết tên&quot;,&quot;Chỉ biết lương&quot;],a:1,t:&quot;Ôn tập&quot;},
-  {q:&quot;Mỗi nghề đều đáng quý vì?&quot;,o:[&quot;Kiếm nhiều tiền&quot;,&quot;Đóng góp cho xã hội theo cách riêng&quot;,&quot;Nổi tiếng&quot;,&quot;Không vì gì&quot;],a:1,t:&quot;Ôn tập&quot;},
-  {q:&quot;Em học được gì từ gương Bác Hồ?&quot;,o:[&quot;Lười biếng&quot;,&quot;Yêu lao động, chăm chỉ, sáng tạo, giản dị&quot;,&quot;Không học gì&quot;,&quot;Chỉ đọc sách&quot;],a:1,t:&quot;Ôn tập&quot;},
-  {q:&quot;Kỹ năng làm việc nhóm cần gì?&quot;,o:[&quot;Chỉ 1 người làm&quot;,&quot;Phân công, hợp tác, lắng nghe, tôn trọng&quot;,&quot;Tranh cãi&quot;,&quot;Im lặng&quot;],a:1,t:&quot;Ôn tập&quot;},
-  {q:&quot;Sau khi trải nghiệm, em nên?&quot;,o:[&quot;Quên đi&quot;,&quot;Rút kinh nghiệm, chia sẻ, áp dụng&quot;,&quot;Không làm gì&quot;,&quot;Phàn nàn&quot;],a:1,t:&quot;Ôn tập&quot;},
-],
-};
-
-
-var cfg={},st={},tmrI;
+function sndUrgent(){playTone(880,.06,&#x27;square&#x27;,.1);setTimeout(function(){playTone(880,.06,&#x27;square&#x27;,.1)},120)}
+function sndWin(){var notes=[523,587,659,784,1047];for(var i=0;i&lt;notes.length;i++){(function(n,delay){setTimeout(function(){playTone(n,.18,&#x27;sine&#x27;,.2)},delay)})(notes[i],i*100)}}
+function sndTick(){playTone(1000,.04,&#x27;sine&#x27;,.08)}
 function startGame(){
   var lid=document.getElementById(&#x27;lesson&#x27;).value;
   var ln=document.getElementById(&#x27;lesson&#x27;).selectedOptions[0].text;
@@ -2581,7 +2294,7 @@ function startGame(){
   document.getElementById(&#x27;gameArea&#x27;).classList.remove(&#x27;hidden&#x27;);
   document.getElementById(&#x27;qT&#x27;).textContent=cfg.total;
   document.getElementById(&#x27;lTag&#x27;).textContent=ln.length&gt;35?ln.substring(0,33)+&#x27;...&#x27;:ln;
-  playTone(440,.1,&#x27;sine&#x27;,.15);setTimeout(function(){playTone(554,.1,&#x27;sine&#x27;,.15),100);setTimeout(function(){playTone(659,.15,&#x27;sine&#x27;,.15),200);
+  playTone(440,.1,&#x27;sine&#x27;,.15);setTimeout(function(){playTone(554,.1,&#x27;sine&#x27;,.15},100);setTimeout(function(){playTone(659,.15,&#x27;sine&#x27;,.15},200);
   showQ();
 }
 function showQ(){
@@ -2597,7 +2310,7 @@ function showQ(){
   document.getElementById(&#x27;btnN&#x27;).classList.add(&#x27;hidden&#x27;);
   document.getElementById(&#x27;pbar&#x27;).style.width=(st.qIdx/cfg.total*100)+&#x27;%&#x27;;
   var lb=[&#x27;A&#x27;,&#x27;B&#x27;,&#x27;C&#x27;,&#x27;D&#x27;];
-  document.getElementById(&#x27;optsD&#x27;).innerHTML=q.o.map(function(o,i) &#x27;&lt;div class=&quot;opt&quot; onclick=&quot;ans(&#x27;+i+&#x27;)&quot; id=&quot;o&#x27;+i+&#x27;&quot;&gt;&#x27;+lb[i]+&#x27;. &#x27;+o+&#x27;&lt;/div&gt;&#x27;).join(&#x27;&#x27;);
+  document.getElementById(&#x27;optsD&#x27;).innerHTML=q.o.map(function(o,i){return &#x27;&lt;div class=&quot;opt&quot; onclick=&quot;ans(&#x27;+i+&#x27;)&quot; id=&quot;o&#x27;+i+&#x27;&quot;&gt;&#x27;+lb[i]+&#x27;. &#x27;+o+&#x27;&lt;/div&gt;&#x27;}).join(&#x27;&#x27;);
   startTmr();
 }
 function ans(idx){
